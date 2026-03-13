@@ -2,24 +2,22 @@ import { EventEmitter } from "node:events";
 
 import OpenElectricityClient from "openelectricity";
 
+i
+    emitter.emit("update", {
+      nem: nemSnapshot,
+      wem: wemSnapshot,
+    });
 
-const POLL_INTERVAL_MS = Number(process.env.POLL_INTERVAL_MS ?? 5 * 60 * 1000);
-
-export const emitter = new EventEmitter();
-export let lastPollAt: Date | null = null;
-
-function toIsoWithoutMillis(date: Date): string {
-  return date.toISOString().replace(/\.\d{3}Z$/, "Z");
+    console.log(
+      `Poll complete - NEM ${nemSnapshot.summary.net_generation_mw}MW, ${nemSnapshot.summary.renewables_pct}% renewable. Duration: ${Date.now() - pollStart}ms.`,
+    );
+  } catch (error) {
+    console.error("Poll failed.", error);
+  }
 }
 
-function getClient(): OpenElectricityClient {
-  return new OpenElectricityClient({
-    apiKey: process.env.OPENELECTRICITY_API_KEY,
-    baseUrl: process.env.OPENELECTRICITY_BASE_URL,
-  });
-}
-
-
+export function startPoller(): NodeJS.Timeout {
+  void poll();
   return setInterval(() => {
     void poll();
   }, POLL_INTERVAL_MS);
