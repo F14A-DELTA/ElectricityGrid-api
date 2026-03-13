@@ -93,6 +93,53 @@ function getMetricFromSnapshot(snapshot: EnergySnapshot, params: HistoryQueryPar
   }
 }
 
+function getRollupMetricValue(row: RollupRow, metric: HistoryQueryParams["metric"]): number | null {
+  switch (metric) {
+    case "generation_mw":
+      return row.avg_net_generation_mw ?? row.avg_power_mw ?? null;
+    case "price":
+      return row.avg_price_per_mwh ?? row.avg_price_dollar_per_mwh ?? null;
+    case "emissions_volume":
+      return row.total_emissions_tco2e ?? null;
+    case "emission_intensity":
+      return row.avg_intensity_kgco2e_per_mwh ?? null;
+    case "demand_mw":
+      return row.avg_demand_mw ?? null;
+    case "renewables_pct":
+      return row.avg_renewables_pct ?? null;
+    default:
+      return null;
+  }
+}
+
+// Metrics that represent totals/summaries — for these we exclude per-fueltech rows
+// when no fueltech filter is specified, to avoid double-counting or duplicate points.
+const SUMMARY_METRICS = new Set<HistoryQueryParams["metric"]>([
+  "generation_mw",
+  "demand_mw",
+  "emissions_volume",
+  "emission_intensity",
+  "renewables_pct",
+  "price",
+]);
+
+function filterRollupRows(
+  rows: RollupRow[],
+  params: Pick<HistoryQueryParams, "region" | "fueltech" | "metric">,
+): RollupRow[] {
+  return rows.filter((row) => {
+    if (params.region && row.region !== params.region) return false;
+    if (params.fueltech && row.fueltech !== params.fueltech) return false;
+
+    // When no fueltech filter is requested for summary metrics, skip per-fueltech rows
+    // so that only the summary/market row per timestamp is returned.
+    if (!params.fueltech && row.fueltech && SUMMARY_METRICS.has(params.metric)) {
+      return false;
+    }
+
+    return true;
+  });
+}
 
 
 
