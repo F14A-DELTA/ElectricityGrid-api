@@ -53,3 +53,32 @@ export const RENEWABLE_FUELTECHS = new Set<string>([
   "bioenergy_biomass",
 ]);
 
+export const LOAD_FUELTECHS = new Set<string>(["pumps", "battery_charging"]);
+
+export function round(value: number | null | undefined, decimals: number): number | null {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return null;
+  }
+
+  const factor = 10 ** decimals;
+  return Math.round(value * factor) / factor;
+}
+
+export function getRows(apiResponse: ITimeSeriesResponse): DataRow[] {
+  const table = apiResponse.datatable ?? DataTable.fromNetworkTimeSeries(apiResponse.response.data);
+  return table.getRows() as DataRow[];
+}
+
+export function getLatestInterval(apiResponse: ITimeSeriesResponse): DataRow[] {
+  const rows = getRows(apiResponse);
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const maxTime = Math.max(...rows.map((row) => row.interval.getTime()));
+  return rows.filter((row) => row.interval.getTime() === maxTime);
+}
+
+function sumMetric(rows: DataRow[], metric: keyof DataRow): number {
+  return rows.reduce((total, row) => total + (typeof row[metric] === "number" ? (row[metric] as number) : 0), 0);
+}
