@@ -92,3 +92,8 @@ function getMetricFromSnapshot(snapshot: EnergySnapshot, params: HistoryQueryPar
       return null;
   }
 }
+
+
+
+
+

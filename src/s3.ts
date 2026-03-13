@@ -167,3 +167,68 @@ export function getLiveKey(network?: string, region?: string): string {
 
   return `live/${networkPath}/${region}.json`;
 }
+
+export function getRawKey(network: string, timestamp: Date): string {
+  const { year, month, day, iso } = toUtcParts(floorToFiveMinutes(timestamp));
+  return `raw/network=${network}/year=${year}/month=${month}/day=${day}/${iso}.json`;
+}
+
+export function getHourlyRollupKey(network: string, year: number, month: number, day: number, hour: number): string {
+  const monthPart = pad(month);
+  const dayPart = pad(day);
+  const hourPart = pad(hour);
+  return `rollups/network=${network}/year=${year}/month=${monthPart}/hourly/${year}-${monthPart}-${dayPart}T${hourPart}.ndjson`;
+}
+
+export function getDailyRollupKey(network: string, year: number, month: number, day: number): string {
+  const monthPart = pad(month);
+  const dayPart = pad(day);
+  return `rollups/network=${network}/year=${year}/month=${monthPart}/daily/${year}-${monthPart}-${dayPart}.ndjson`;
+}
+
+export function getRawKeysForRange(network: string, from: Date, to: Date): string[] {
+  const keys: string[] = [];
+  const cursor = floorToFiveMinutes(from);
+  const end = floorToFiveMinutes(to);
+
+  while (cursor <= end) {
+    keys.push(getRawKey(network, cursor));
+    cursor.setUTCMinutes(cursor.getUTCMinutes() + 5);
+  }
+
+  return keys;
+}
+
+export function getHourlyRollupKeysForRange(network: string, from: Date, to: Date): string[] {
+  const keys: string[] = [];
+  const cursor = floorToHour(from);
+  const end = floorToHour(to);
+
+  while (cursor <= end) {
+    keys.push(
+      getHourlyRollupKey(
+        network,
+        cursor.getUTCFullYear(),
+        cursor.getUTCMonth() + 1,
+        cursor.getUTCDate(),
+        cursor.getUTCHours(),
+      ),
+    );
+    cursor.setUTCHours(cursor.getUTCHours() + 1);
+  }
+
+  return keys;
+}
+
+export function getDailyRollupKeysForDays(network: string, numDays: number): string[] {
+  const keys: string[] = [];
+  const cursor = startOfUtcDay(new Date());
+
+  for (let index = 0; index < numDays; index += 1) {
+    const target = new Date(cursor);
+    target.setUTCDate(cursor.getUTCDate() - index);
+    keys.push(getDailyRollupKey(network, target.getUTCFullYear(), target.getUTCMonth() + 1, target.getUTCDate()));
+  }
+
+  return keys;
+}
