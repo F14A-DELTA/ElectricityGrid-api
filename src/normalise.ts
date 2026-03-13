@@ -82,3 +82,63 @@ export function getLatestInterval(apiResponse: ITimeSeriesResponse): DataRow[] {
 function sumMetric(rows: DataRow[], metric: keyof DataRow): number {
   return rows.reduce((total, row) => total + (typeof row[metric] === "number" ? (row[metric] as number) : 0), 0);
 }
+
+function getLabel(fueltech: string | null | undefined): string {
+  if (!fueltech) {
+    return "Unknown";
+  }
+
+  return FUELTECH_LABELS[fueltech] ?? fueltech;
+}
+
+function getRegion(row: DataRow): string | null {
+  if (typeof row.region === "string" && row.region.length > 0) {
+    return row.region;
+  }
+
+  if (typeof row.network_region === "string" && row.network_region.length > 0) {
+    return row.network_region;
+  }
+
+  return null;
+}
+
+function buildGenerationItems(
+  rows: DataRow[],
+  totalNetPower: number,
+): SnapshotGenerationItem[] {
+  return rows.map((row) => {
+    const power = Number(row.power ?? 0);
+    const energy = Number(row.energy ?? 0);
+    const marketValue = Number(row.market_value ?? 0);
+
+    return {
+      fueltech: String(row.fueltech ?? "unknown"),
+      label: getLabel(row.fueltech),
+      power_mw: round(power, 1),
+      proportion_pct: totalNetPower > 0 ? round((power / totalNetPower) * 100, 1) : null,
+      price_dollar_per_mwh: energy > 0 ? round(marketValue / energy, 2) : null,
+      total_energy_mwh: round(energy, 1),
+    };
+  });
+}
+
+function buildLoadItems(
+  rows: DataRow[],
+  totalNetPower: number,
+): SnapshotGenerationItem[] {
+  return rows.map((row) => {
+    const power = Math.abs(Number(row.power ?? 0));
+    const energy = Math.abs(Number(row.energy ?? 0));
+    const marketValue = Number(row.market_value ?? 0);
+
+    return {
+      fueltech: String(row.fueltech ?? "unknown"),
+      label: getLabel(row.fueltech),
+      power_mw: round(power, 1),
+      proportion_pct: totalNetPower > 0 ? round((power / totalNetPower) * 100, 1) : null,
+      price_dollar_per_mwh: energy > 0 ? round(marketValue / energy, 2) : null,
+      total_energy_mwh: round(energy, 1),
+    };
+  });
+}
