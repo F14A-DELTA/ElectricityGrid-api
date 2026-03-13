@@ -1,0 +1,28 @@
+{
+  "name": "seng3011-api",
+  "version": "1.0.0",
+  "description": "Event-driven API for Australian electricity market data.",
+  "main": "dist/src/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/index.js",
+    "backfill:raw": "node -r dotenv/config dist/scripts/backfill-raw.js",
+    "backfill:rollups": "node -r dotenv/config dist/scripts/build-rollups-local.js",
+    "backfill:upload": "node -r dotenv/config dist/scripts/upload-backfill.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1007.0",
+    "@fastify/websocket": "^11.2.0",
+    "dotenv": "^17.3.1",
+    "fastify": "^5.8.2",
+    "fastify-plugin": "^5.1.0",
+    "openelectricity": "^0.7.1-0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "typescript": "^5.9.2"
+  }
+}
