@@ -152,26 +152,145 @@ function mergeCurtailmentArrays(regions: RegionSnapshot[]): EnergySnapshot["curt
   }));
 }
 
-debugger
-debugger
-3
-3
-3
-this2g
+function applyMetricSubscriptions(snapshot: EnergySnapshot, metrics: Set<string>): Partial<EnergySnapshot> {
+  if (metrics.size === 0) return snapshot;
 
-3
-r
-23
-CanvasRenderingContext2D
-3r
-23
-r
-2
-r32
-recomputeEmissionsFromRegions3r
-3
-recomputeEmissionsFromRegions23
-r
-23
-r3
-2r
+  const filteredRegions = Object.fromEntries(
+    Object.entries(snapshot.regions).map(([region, data]) => [
+      region,
+      data ? filterRegionByMetrics(data, metrics) : data,
+    ]),
+  ) as Partial<Record<RegionCode, RegionSnapshot>>;
+
+  return {
+    updated_at: snapshot.updated_at,
+    network: snapshot.network,
+    summary: {
+      net_generation_mw: metrics.has("generation_mw") ? snapshot.summary.net_generation_mw : null,
+      renewables_mw: metrics.has("renewables_pct") ? snapshot.summary.renewables_mw : null,
+      renewables_pct: metrics.has("renewables_pct") ? snapshot.summary.renewables_pct : null,
+      demand_mw: metrics.has("demand_mw") ? snapshot.summary.demand_mw : null,
+    },
+    generation: metrics.has("generation_mw") || metrics.has("price") ? snapshot.generation : [],
+    loads: metrics.has("generation_mw") || metrics.has("price") ? snapshot.loads : [],
+    curtailment: metrics.has("generation_mw") ? snapshot.curtailment : [],
+    emissions:
+      metrics.has("emissions_volume") || metrics.has("emission_intensity")
+        ? snapshot.emissions
+        : { volume_tco2e_per_30m: null, intensity_kgco2e_per_mwh: null },
+    regions: filteredRegions,
+  };
+}
+
+export function applySubscriptions(snapshots: LiveSnapshots, subscriptions: SubscriptionState): LiveSnapshots {
+  const networks = Object.entries(snapshots) as Array<[NetworkCode, EnergySnapshot]>;
+
+  return Object.fromEntries(
+    networks.map(([network, snapshot]) => {
+      let workingSnapshot = snapshot;
+
+      if (subscriptions.regions.size > 0) {
+        const filteredRegionEntries = Object.entries(snapshot.regions).filter(([region]) =>
+          subscriptions.regions.has(region),
+        );
+        const filteredRegions = Object.fromEntries(filteredRegionEntries) as Partial<Record<RegionCode, RegionSnapshot>>;
+        const selectedRegionData = filteredRegionEntries
+          .map(([, data]) => data)
+          .filter((d): d is RegionSnapshot => d !== undefined);
+
+        workingSnapshot = {
+          ...snapshot,
+          summary: recomputeSummaryFromRegions(selectedRegionData),
+          generation: mergeGenerationArrays(selectedRegionData),
+          loads: mergeLoadsArrays(selectedRegionData),
+          curtailment: mergeCurtailmentArrays(selectedRegionData),
+          emissions: recomputeEmissionsFromRegions(selectedRegionData),
+          regions: filteredRegions,
+        };
+      }
+
+      return [network, applyMetricSubscriptions(workingSnapshot, subscriptions.metrics)];
+    }),
+  );
+}
+
+const wsRoutes: FastifyPluginAsync = async (fastify) => {
+  fastify.get(
+    "/v1/ws",
+    {
+      websocket: true,
+      preValidation: async (request, reply) => {
+        if (!validateAuth(request)) {
+          reply.code(401).send({ success: false, error: "Unauthorized" });
+        }
+      },
+    },
+    (socket, _request) => {
+      const subscriptions: SubscriptionState = {
+        regions: new Set<string>(),
+        metrics: new Set<string>(),
+      };
+
+      socket.send(
+        JSON.stringify({
+          event: "energy_update",
+          data: latestSnapshot,
+        }),
+      );
+
+      const handler = (snapshots: { nem: EnergySnapshot; wem: EnergySnapshot }) => {
+        socket.send(
+          JSON.stringify({
+            event: "energy_update",
+            data: applySubscriptions(
+              {
+                NEM: snapshots.nem,
+                WEM: snapshots.wem,
+              },
+              subscriptions,
+            ),
+          }),
+        );
+      };
+
+      emitter.on("update", handler);
+
+      socket.on("message", (message: unknown) => {
+        try {
+          const payload = JSON.parse(String(message)) as {
+            action?: "subscribe" | "unsubscribe";
+            regions?: string[];
+            metrics?: string[];
+          };
+
+          if (payload.action === "subscribe") {
+            payload.regions?.forEach((region) => subscriptions.regions.add(region));
+            payload.metrics?.forEach((metric) => subscriptions.metrics.add(metric));
+            return;
+          }
+
+          if (payload.action === "unsubscribe") {
+            payload.regions?.forEach((region) => subscriptions.regions.delete(region));
+            payload.metrics?.forEach((metric) => subscriptions.metrics.delete(metric));
+          }
+        } catch (error) {
+          socket.send(
+            JSON.stringify({
+              event: "error",
+              error: "Invalid subscription message",
+            }),
+          );
+        }
+      });
+
+      const cleanup = () => {
+        emitter.off("update", handler);
+      };
+
+      socket.on("close", cleanup);
+      socket.on("error", cleanup);
+    },
+  );
+};
+
+export default fp(wsRoutes);
