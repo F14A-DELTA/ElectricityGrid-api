@@ -149,7 +149,6 @@ function selectStat(rows: RollupRow[], metricValue: (row: RollupRow) => number |
     if (direction === "min") {
       return current.value < best.value ? current : best;
     }
-
     return current.value > best.value ? current : best;
   });
 
@@ -190,7 +189,6 @@ export function readFromBuffer(params: HistoryQueryParams): HistoryPoint[] {
   for (const point of points) {
     deduped.set(point.timestamp, point);
   }
-
   return Array.from(deduped.values()).sort(
     (left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime(),
   );
@@ -213,7 +211,6 @@ export async function readDailyRollups(params: HistoryQueryParams): Promise<Hist
   const numDays = params.range === "30d" ? 30 : 90;
   const keys = getDailyRollupKeysForDays(params.network, numDays);
   const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
-
   return rows
     .map((row) => ({
       timestamp: row.bucket,
@@ -229,8 +226,6 @@ export async function computeStats(
 ): Promise<RangeStats> {
   const numDays = range === "7d" ? 7 : range === "30d" ? 30 : 90;
   const keys = getDailyRollupKeysForDays(network, numDays);
-  // Use market rows (which carry demand/renewables/price and have region set).
-  // Exclude per-fueltech rows to avoid skewing the stats.
   const rows = (await getNdjsonMany<RollupRow>(keys)).filter((row) => {
     if (row.fueltech) return false;
     if (region && row.region !== region) return false;
@@ -256,3 +251,4 @@ export async function computeStats(
 export function getBufferSize(): number {
   return recentBuffer.length;
 }
+
