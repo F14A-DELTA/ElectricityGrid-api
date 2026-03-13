@@ -82,3 +82,96 @@ function recomputeEmissionsFromRegions(regions: RegionSnapshot[]): SnapshotEmiss
     intensity_kgco2e_per_mwh: round(avgIntensity, 2),
   };
 }
+
+function mergeGenerationArrays(regions: RegionSnapshot[]): EnergySnapshot["generation"] {
+  const fueltechMap = new Map<string, { power: number; energy: number; label: string }>();
+
+  for (const r of regions) {
+    for (const item of r.generation) {
+      const existing = fueltechMap.get(item.fueltech) ?? { power: 0, energy: 0, label: item.label };
+      existing.power += item.power_mw ?? 0;
+      existing.energy += item.total_energy_mwh ?? 0;
+      fueltechMap.set(item.fueltech, existing);
+    }
+  }
+
+  const totalPower = Array.from(fueltechMap.values()).reduce((t, i) => t + Math.max(0, i.power), 0);
+
+  return Array.from(fueltechMap.entries()).map(([fueltech, item]) => ({
+    fueltech,
+    label: item.label,
+    power_mw: round(item.power, 1),
+    proportion_pct: totalPower > 0 ? round((item.power / totalPower) * 100, 1) : null,
+    price_dollar_per_mwh: null,
+    total_energy_mwh: round(item.energy, 1),
+  }));
+}
+
+function mergeLoadsArrays(regions: RegionSnapshot[]): EnergySnapshot["loads"] {
+  const fueltechMap = new Map<string, { power: number; energy: number; label: string }>();
+  let totalNetGen = 0;
+
+  for (const r of regions) {
+    totalNetGen += r.summary.net_generation_mw ?? 0;
+    for (const item of r.loads) {
+      const existing = fueltechMap.get(item.fueltech) ?? { power: 0, energy: 0, label: item.label };
+      existing.power += item.power_mw ?? 0;
+      existing.energy += item.total_energy_mwh ?? 0;
+      fueltechMap.set(item.fueltech, existing);
+    }
+  }
+
+  return Array.from(fueltechMap.entries()).map(([fueltech, item]) => ({
+    fueltech,
+    label: item.label,
+    power_mw: round(item.power, 1),
+    proportion_pct: totalNetGen > 0 ? round((item.power / totalNetGen) * 100, 1) : null,
+    price_dollar_per_mwh: null,
+    total_energy_mwh: round(item.energy, 1),
+  }));
+}
+
+function mergeCurtailmentArrays(regions: RegionSnapshot[]): EnergySnapshot["curtailment"] {
+  const curtailMap = new Map<string, { power: number; label: string }>();
+  let totalNetGen = 0;
+
+  for (const r of regions) {
+    totalNetGen += r.summary.net_generation_mw ?? 0;
+    for (const item of r.curtailment) {
+      const existing = curtailMap.get(item.fueltech) ?? { power: 0, label: item.label };
+      existing.power += item.power_mw ?? 0;
+      curtailMap.set(item.fueltech, existing);
+    }
+  }
+
+  return Array.from(curtailMap.entries()).map(([fueltech, item]) => ({
+    fueltech,
+    label: item.label,
+    power_mw: round(item.power, 1),
+    proportion_pct: totalNetGen > 0 ? round((item.power / totalNetGen) * 100, 1) : null,
+  }));
+}
+
+debugger
+debugger
+3
+3
+3
+this2g
+
+3
+r
+23
+CanvasRenderingContext2D
+3r
+23
+r
+2
+r32
+recomputeEmissionsFromRegions3r
+3
+recomputeEmissionsFromRegions23
+r
+23
+r3
+2r
