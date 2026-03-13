@@ -40,3 +40,22 @@ function toUtcParts(date: Date): { year: number; month: string; day: string; hou
     iso: date.toISOString().replace(/\.\d{3}Z$/, "Z"),
   };
 }
+
+function floorToFiveMinutes(date: Date): Date {
+  const floored = new Date(date);
+  floored.setUTCSeconds(0, 0);
+  floored.setUTCMinutes(Math.floor(floored.getUTCMinutes() / 5) * 5);
+  return floored;
+}
+
+function floorToHour(date: Date): Date {
+  const floored = new Date(date);
+  floored.setUTCMinutes(0, 0, 0);
+  return floored;
+}
+
+function startOfUtcDay(date: Date): Date {
+  const start = new Date(date);
+  start.setUTCHours(0, 0, 0, 0);
+  return start;
+}
