@@ -112,8 +112,6 @@ function getRollupMetricValue(row: RollupRow, metric: HistoryQueryParams["metric
   }
 }
 
-// Metrics that represent totals/summaries — for these we exclude per-fueltech rows
-// when no fueltech filter is specified, to avoid double-counting or duplicate points.
 const SUMMARY_METRICS = new Set<HistoryQueryParams["metric"]>([
   "generation_mw",
   "demand_mw",
@@ -130,9 +128,6 @@ function filterRollupRows(
   return rows.filter((row) => {
     if (params.region && row.region !== params.region) return false;
     if (params.fueltech && row.fueltech !== params.fueltech) return false;
-
-    // When no fueltech filter is requested for summary metrics, skip per-fueltech rows
-    // so that only the summary/market row per timestamp is returned.
     if (!params.fueltech && row.fueltech && SUMMARY_METRICS.has(params.metric)) {
       return false;
     }
@@ -141,6 +136,123 @@ function filterRollupRows(
   });
 }
 
+function selectStat(rows: RollupRow[], metricValue: (row: RollupRow) => number | null, direction: "min" | "max"): RangeStatPoint {
+  const candidates = rows
+    .map((row) => ({ row, value: metricValue(row) }))
+    .filter((candidate): candidate is { row: RollupRow; value: number } => typeof candidate.value === "number");
 
+  if (candidates.length === 0) {
+    return { value: null, timestamp: null };
+  }
 
+  const selected = candidates.reduce((best, current) => {
+    if (direction === "min") {
+      return current.value < best.value ? current : best;
+    }
 
+    return current.value > best.value ? current : best;
+  });
+
+  return {
+    value: selected.value,
+    timestamp: selected.row.bucket,
+  };
+}
+
+export async function queryHistory(params: HistoryQueryParams): Promise<HistoryPoint[]> {
+  if (params.range === "24h" || params.interval === "5m") {
+    return readFromBuffer(params);
+  }
+
+  if (params.range === "7d" || params.interval === "1h") {
+    return readHourlyRollups(params);
+  }
+
+  return readDailyRollups(params);
+}
+
+export function readFromBuffer(params: HistoryQueryParams): HistoryPoint[] {
+  const from = getRangeStart("24h");
+  const points = getBufferSince(from)
+    .map((entry) => {
+      const snapshot = entry.snapshots[params.network];
+      if (!snapshot) return null;
+
+      return {
+        timestamp: snapshot.updated_at,
+        value: getMetricFromSnapshot(snapshot, params),
+      } satisfies HistoryPoint;
+    })
+    .filter((point): point is HistoryPoint => point !== null)
+    .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
+
+  const deduped = new Map<string, HistoryPoint>();
+  for (const point of points) {
+    deduped.set(point.timestamp, point);
+  }
+
+  return Array.from(deduped.values()).sort(
+    (left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime(),
+  );
+}
+
+export async function readHourlyRollups(params: HistoryQueryParams): Promise<HistoryPoint[]> {
+  const from = getRangeStart(params.range === "24h" ? "7d" : params.range);
+  const keys = getHourlyRollupKeysForRange(params.network, from, new Date());
+  const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
+
+  return rows
+    .map((row) => ({
+      timestamp: row.bucket,
+      value: getRollupMetricValue(row, params.metric),
+    }))
+    .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
+}
+
+export async function readDailyRollups(params: HistoryQueryParams): Promise<HistoryPoint[]> {
+  const numDays = params.range === "30d" ? 30 : 90;
+  const keys = getDailyRollupKeysForDays(params.network, numDays);
+  const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
+
+  return rows
+    .map((row) => ({
+      timestamp: row.bucket,
+      value: getRollupMetricValue(row, params.metric),
+    }))
+    .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
+}
+
+export async function computeStats(
+  network: HistoryQueryParams["network"],
+  range: Exclude<HistoryQueryParams["range"], "24h">,
+  region?: string,
+): Promise<RangeStats> {
+  const numDays = range === "7d" ? 7 : range === "30d" ? 30 : 90;
+  const keys = getDailyRollupKeysForDays(network, numDays);
+  // Use market rows (which carry demand/renewables/price and have region set).
+  // Exclude per-fueltech rows to avoid skewing the stats.
+  const rows = (await getNdjsonMany<RollupRow>(keys)).filter((row) => {
+    if (row.fueltech) return false;
+    if (region && row.region !== region) return false;
+    return true;
+  });
+
+  return {
+    demand_mw: {
+      min: selectStat(rows, (row) => row.avg_demand_mw ?? null, "min"),
+      max: selectStat(rows, (row) => row.avg_demand_mw ?? null, "max"),
+    },
+    renewables_pct: {
+      min: selectStat(rows, (row) => row.avg_renewables_pct ?? null, "min"),
+      max: selectStat(rows, (row) => row.avg_renewables_pct ?? null, "max"),
+    },
+    price: {
+      min: selectStat(rows, (row) => row.avg_price_dollar_per_mwh ?? row.avg_price_per_mwh ?? null, "min"),
+      max: selectStat(rows, (row) => row.avg_price_dollar_per_mwh ?? row.avg_price_per_mwh ?? null, "max"),
+    },
+  };
+}
+
+export function getBufferSize(): number {
+  return recentBuffer.length;
+}
