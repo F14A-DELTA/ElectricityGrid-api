@@ -296,9 +296,54 @@ export function buildSnapshotFromRows(
     total_energy_mwh: round(item.energy, 1),
   }));
 
+  const renewablesMw = latestGenerationRows.reduce((total, row) => {
+    if (LOAD_FUELTECHS.has(String(row.fueltech ?? ""))) return total;
+    return total + (RENEWABLE_FUELTECHS.has(String(row.fueltech ?? "")) ? Number(row.power ?? 0) : 0);
+  }, 0);
 
+  const curtailmentSolar = sumMetric(latestMarketRows, "curtailment_solar_utility");
+  const curtailmentWind = sumMetric(latestMarketRows, "curtailment_wind");
+  const curtailment = buildCurtailmentItems(curtailmentSolar, curtailmentWind, totalNetPower);
 
+  const totalDemand = latestMarketRows.reduce((total, row) => total + Number(row.demand ?? 0), 0);
+  const emissionsVolume = sumMetric(latestEmissionsRows, "emissions");
+  const totalGenerationEnergy = latestGenerationRows.reduce((total, row) => {
+    if (LOAD_FUELTECHS.has(String(row.fueltech ?? ""))) return total;
+    return total + Math.max(0, Number(row.energy ?? 0));
+  }, 0);
+  const derivedEmissionsIntensity =
+    totalGenerationEnergy > 0 ? (emissionsVolume * 1000) / totalGenerationEnergy : null;
 
+  return {
+    updated_at: (updatedAtSource ?? new Date()).toISOString().replace(/\.\d{3}Z$/, "Z"),
+    network,
+    summary: {
+      net_generation_mw: round(totalNetPower, 1),
+      renewables_mw: round(renewablesMw, 1),
+      renewables_pct: totalNetPower > 0 ? round((renewablesMw / totalNetPower) * 100, 1) : null,
+      demand_mw: round(totalDemand, 1),
+    },
+    generation,
+    loads,
+    curtailment,
+    emissions: {
+      volume_tco2e_per_30m: round(emissionsVolume, 1),
+      intensity_kgco2e_per_mwh: round(derivedEmissionsIntensity, 2),
+    },
+    regions: regionSnapshots,
+  };
+}
 
-
-  
+export function buildSnapshot(
+  genData: ITimeSeriesResponse,
+  marketData: ITimeSeriesResponse,
+  emissionsData: ITimeSeriesResponse,
+  network: NetworkCode,
+): EnergySnapshot {
+  return buildSnapshotFromRows(
+    getLatestInterval(genData),
+    getLatestInterval(marketData),
+    getLatestInterval(emissionsData),
+    network,
+  );
+}
