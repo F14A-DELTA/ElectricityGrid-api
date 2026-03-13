@@ -2,7 +2,18 @@ import { EventEmitter } from "node:events";
 
 import OpenElectricityClient from "openelectricity";
 
-i
+    await Promise.all([
+      putJson("live/snapshot.json", combinedSnapshot, 300),
+      putJson(getLiveKey("NEM"), nemSnapshot, 300),
+      ...Object.keys(nemSnapshot.regions).map((region) =>
+        putJson(getLiveKey("NEM", region), nemSnapshot.regions[region as keyof typeof nemSnapshot.regions], 300),
+      ),
+      putJson(getLiveKey("WEM", "WEM"), wemSnapshot, 300),
+      putJson(getRawKey("NEM", now), nemSnapshot, 0),
+      putJson(getRawKey("WEM", now), wemSnapshot, 0),
+    ]);
+
+    lastPollAt = new Date();
     emitter.emit("update", {
       nem: nemSnapshot,
       wem: wemSnapshot,
