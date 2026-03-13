@@ -142,3 +142,163 @@ function buildLoadItems(
     };
   });
 }
+
+function buildCurtailmentItems(
+  curtailmentSolar: number,
+  curtailmentWind: number,
+  totalNetPower: number,
+): SnapshotCurtailmentItem[] {
+  return [
+    {
+      fueltech: "solar_utility",
+      label: getLabel("solar_utility"),
+      power_mw: round(curtailmentSolar, 1),
+      proportion_pct: totalNetPower > 0 ? round((curtailmentSolar / totalNetPower) * 100, 1) : null,
+    },
+    {
+      fueltech: "wind",
+      label: getLabel("wind"),
+      power_mw: round(curtailmentWind, 1),
+      proportion_pct: totalNetPower > 0 ? round((curtailmentWind / totalNetPower) * 100, 1) : null,
+    },
+  ];
+}
+
+function buildRegionSnapshot(
+  regionGenRows: DataRow[],
+  regionLoadRows: DataRow[],
+  regionMarketRow: DataRow | undefined,
+  regionEmissionsRows: DataRow[],
+): RegionSnapshot {
+  const totalNetPower = regionGenRows.reduce((total, row) => total + Math.max(0, Number(row.power ?? 0)), 0);
+  const generation = buildGenerationItems(regionGenRows, totalNetPower);
+  const loads = buildLoadItems(regionLoadRows, totalNetPower);
+
+  const curtailmentSolar = typeof regionMarketRow?.curtailment_solar_utility === "number"
+    ? regionMarketRow.curtailment_solar_utility
+    : 0;
+  const curtailmentWind = typeof regionMarketRow?.curtailment_wind === "number"
+    ? regionMarketRow.curtailment_wind
+    : 0;
+  const curtailment = buildCurtailmentItems(curtailmentSolar, curtailmentWind, totalNetPower);
+
+  const renewablesMw = regionGenRows.reduce((total, row) => {
+    return total + (RENEWABLE_FUELTECHS.has(String(row.fueltech ?? "")) ? Number(row.power ?? 0) : 0);
+  }, 0);
+
+  const emissionsVolume = regionEmissionsRows.reduce((total, row) => total + Number(row.emissions ?? 0), 0);
+  const generationEnergy = regionGenRows.reduce((total, row) => total + Math.max(0, Number(row.energy ?? 0)), 0);
+  const emissionsIntensity = generationEnergy > 0 ? (emissionsVolume * 1000) / generationEnergy : null;
+
+  const demandMw = typeof regionMarketRow?.demand === "number" ? regionMarketRow.demand : null;
+
+  return {
+    price_dollar_per_mwh: round(typeof regionMarketRow?.price === "number" ? regionMarketRow.price : null, 2),
+    demand_mw: round(demandMw, 1),
+    summary: {
+      net_generation_mw: round(totalNetPower, 1),
+      renewables_mw: round(renewablesMw, 1),
+      renewables_pct: totalNetPower > 0 ? round((renewablesMw / totalNetPower) * 100, 1) : null,
+      demand_mw: round(demandMw, 1),
+    },
+    generation,
+    loads,
+    curtailment,
+    emissions: {
+      volume_tco2e_per_30m: round(emissionsVolume, 1),
+      intensity_kgco2e_per_mwh: round(emissionsIntensity, 2),
+    },
+  };
+}
+
+export function buildSnapshotFromRows(
+  latestGenerationRows: DataRow[],
+  latestMarketRows: DataRow[],
+  latestEmissionsRows: DataRow[],
+  network: NetworkCode,
+): EnergySnapshot {
+  const updatedAtSource =
+    latestGenerationRows[0]?.interval ??
+    latestMarketRows[0]?.interval ??
+    latestEmissionsRows[0]?.interval;
+
+  // Collect all region codes from all data sources.
+  const regionCodes = new Set<string>();
+  for (const row of [...latestMarketRows, ...latestGenerationRows, ...latestEmissionsRows]) {
+    const r = getRegion(row);
+    if (r) regionCodes.add(r);
+  }
+
+  // Build per-region snapshots.
+  const regionSnapshots: Partial<Record<RegionCode, RegionSnapshot>> = {};
+  for (const region of regionCodes) {
+    const regionGenRows = latestGenerationRows.filter(
+      (row) => getRegion(row) === region && !LOAD_FUELTECHS.has(String(row.fueltech ?? "")),
+    );
+    const regionLoadRows = latestGenerationRows.filter(
+      (row) => getRegion(row) === region && LOAD_FUELTECHS.has(String(row.fueltech ?? "")),
+    );
+    const regionMarketRow = latestMarketRows.find((row) => getRegion(row) === region);
+    const regionEmissionsRows = latestEmissionsRows.filter((row) => getRegion(row) === region);
+
+    regionSnapshots[region as RegionCode] = buildRegionSnapshot(
+      regionGenRows,
+      regionLoadRows,
+      regionMarketRow,
+      regionEmissionsRows,
+    );
+  }
+
+  // Build network-level aggregates by merging across regions.
+  // Group generation by fueltech, summing power/energy/market_value across regions.
+  const fueltechGenMap = new Map<string, { power: number; energy: number; marketValue: number }>();
+  for (const row of latestGenerationRows) {
+    if (LOAD_FUELTECHS.has(String(row.fueltech ?? ""))) continue;
+    const ft = String(row.fueltech ?? "unknown");
+    const existing = fueltechGenMap.get(ft) ?? { power: 0, energy: 0, marketValue: 0 };
+    existing.power += Number(row.power ?? 0);
+    existing.energy += Number(row.energy ?? 0);
+    existing.marketValue += Number(row.market_value ?? 0);
+    fueltechGenMap.set(ft, existing);
+  }
+
+  const totalNetPower = Array.from(fueltechGenMap.values()).reduce(
+    (total, item) => total + Math.max(0, item.power),
+    0,
+  );
+
+  const generation: EnergySnapshot["generation"] = Array.from(fueltechGenMap.entries()).map(([fueltech, item]) => ({
+    fueltech,
+    label: getLabel(fueltech),
+    power_mw: round(item.power, 1),
+    proportion_pct: totalNetPower > 0 ? round((item.power / totalNetPower) * 100, 1) : null,
+    price_dollar_per_mwh: item.energy > 0 ? round(item.marketValue / item.energy, 2) : null,
+    total_energy_mwh: round(item.energy, 1),
+  }));
+
+  const fueltechLoadMap = new Map<string, { power: number; energy: number; marketValue: number }>();
+  for (const row of latestGenerationRows) {
+    if (!LOAD_FUELTECHS.has(String(row.fueltech ?? ""))) continue;
+    const ft = String(row.fueltech ?? "unknown");
+    const existing = fueltechLoadMap.get(ft) ?? { power: 0, energy: 0, marketValue: 0 };
+    existing.power += Math.abs(Number(row.power ?? 0));
+    existing.energy += Math.abs(Number(row.energy ?? 0));
+    existing.marketValue += Number(row.market_value ?? 0);
+    fueltechLoadMap.set(ft, existing);
+  }
+
+  const loads: EnergySnapshot["loads"] = Array.from(fueltechLoadMap.entries()).map(([fueltech, item]) => ({
+    fueltech,
+    label: getLabel(fueltech),
+    power_mw: round(item.power, 1),
+    proportion_pct: totalNetPower > 0 ? round((item.power / totalNetPower) * 100, 1) : null,
+    price_dollar_per_mwh: item.energy > 0 ? round(item.marketValue / item.energy, 2) : null,
+    total_energy_mwh: round(item.energy, 1),
+  }));
+
+
+
+
+
+
+  
