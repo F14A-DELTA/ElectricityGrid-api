@@ -59,3 +59,111 @@ function startOfUtcDay(date: Date): Date {
   start.setUTCHours(0, 0, 0, 0);
   return start;
 }
+
+function isMissingObjectError(error: unknown): boolean {
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const message = typeof (error as { message?: unknown }).message === "string" ? error.message : "";
+  return ["NoSuchKey", "NotFound", "The specified key does not exist"].some(
+    (token) => error.name === token || message.includes(token),
+  );
+}
+
+export async function putJson(key: string, data: unknown, maxAge: number): Promise<void> {
+  const cacheControl = maxAge > 0 ? `max-age=${maxAge}, public` : "no-cache";
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: requireBucket(),
+      Key: key,
+      Body: JSON.stringify(data),
+      ContentType: "application/json",
+      CacheControl: cacheControl,
+    }),
+  );
+}
+
+export async function putNdjson(key: string, rows: unknown[]): Promise<void> {
+  const body = rows.map((row) => JSON.stringify(row)).join("\n");
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: requireBucket(),
+      Key: key,
+      Body: body,
+      ContentType: "application/x-ndjson",
+    }),
+  );
+}
+
+export async function getJson<T>(key: string): Promise<T | null> {
+  try {
+    const response = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: requireBucket(),
+        Key: key,
+      }),
+    );
+
+    const text = await response.Body?.transformToString();
+    return text ? (JSON.parse(text) as T) : null;
+  } catch (error) {
+    if (isMissingObjectError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
+}
+
+export async function getNdjson<T>(key: string): Promise<T[]> {
+  try {
+    const response = await s3Client.send(
+      new GetObjectCommand({
+        Bucket: requireBucket(),
+        Key: key,
+      }),
+    );
+
+    const text = await response.Body?.transformToString();
+    if (!text) {
+      return [];
+    }
+
+    return text
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => JSON.parse(line) as T);
+  } catch (error) {
+    if (isMissingObjectError(error)) {
+      return [];
+    }
+
+    throw error;
+  }
+}
+
+export async function getJsonMany<T>(keys: string[]): Promise<Array<T | null>> {
+  return Promise.all(keys.map((key) => getJson<T>(key)));
+}
+
+export async function getNdjsonMany<T>(keys: string[]): Promise<T[]> {
+  const rows = await Promise.all(keys.map((key) => getNdjson<T>(key)));
+  return rows.flat();
+}
+
+export function getLiveKey(network?: string, region?: string): string {
+  if (!network) {
+    return "live/snapshot.json";
+  }
+
+  const networkPath = network.toLowerCase();
+  if (!region) {
+    return `live/${networkPath}/snapshot.json`;
+  }
+
+  return `live/${networkPath}/${region}.json`;
+}
