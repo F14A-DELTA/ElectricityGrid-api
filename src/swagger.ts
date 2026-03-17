@@ -8,8 +8,8 @@ export const swaggerOpenApi: FastifyDynamicSwaggerOptions["openapi"] = {
     version: "1.0.0",
   },
   servers: [
-    { url: "http://localhost:3000",                                  description: "Local development" },
     { url: "http://ec2-54-226-204-58.compute-1.amazonaws.com:3000", description: "Production" },
+    { url: "http://localhost:3000",                                  description: "Local development" },
   ],
   components: {
     securitySchemes: {
@@ -74,37 +74,6 @@ export const swaggerOpenApi: FastifyDynamicSwaggerOptions["openapi"] = {
           generation:  { type: "array", items: { $ref: "#/components/schemas/SnapshotGenerationItem" } },
           loads:       { type: "array", items: { $ref: "#/components/schemas/SnapshotGenerationItem" } },
           curtailment: { type: "array", items: { $ref: "#/components/schemas/SnapshotCurtailmentItem" } },
-        },
-      },
-      EnergySnapshot: {
-        type: "object",
-        properties: {
-          updated_at:  { type: "string", format: "date-time" },
-          network:     { $ref: "#/components/schemas/NetworkCode" },
-          summary:     { $ref: "#/components/schemas/SnapshotSummary" },
-          emissions:   { $ref: "#/components/schemas/SnapshotEmissions" },
-          generation:  { type: "array", items: { $ref: "#/components/schemas/SnapshotGenerationItem" } },
-          loads:       { type: "array", items: { $ref: "#/components/schemas/SnapshotGenerationItem" } },
-          curtailment: { type: "array", items: { $ref: "#/components/schemas/SnapshotCurtailmentItem" } },
-          regions: {
-            type: "object",
-            additionalProperties: { $ref: "#/components/schemas/RegionSnapshot" },
-          },
-        },
-      },
-      SuccessResponse: {
-        type: "object",
-        properties: {
-          success:    { type: "boolean", example: true },
-          updated_at: { type: "string", format: "date-time" },
-          data:       { type: "object" },
-        },
-      },
-      ErrorResponse: {
-        type: "object",
-        properties: {
-          success: { type: "boolean", example: false },
-          error:   { type: "string" },
         },
       },
     },
