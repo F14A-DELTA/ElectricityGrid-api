@@ -21,7 +21,6 @@ describe("normalise", () => {
         it("builds network + region snapshots with correct aggregates", () => {
             const t = new Date("2026-01-01T00:05:00.123Z");
 
-
             const generationRows: DataRow[] = [
                 { interval: t, region: "NSW1", fueltech: "coal_black", power: 100, energy: 50, market_value: 5000 },
                 { interval: t, region: "NSW1", fueltech: "wind", power: 50, energy: 30, market_value: 1200 },
