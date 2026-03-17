@@ -479,3 +479,237 @@ describe("s3-query", () => {
             }),
         ).toEqual([{ timestamp: "2026-03-17T10:00:00Z", value: null }]);
     });
+
+    it("queryHistory routes to buffer for 24h/5m", async () => {
+        const mod = await loadModule();
+        getBufferSinceMock.mockReturnValue([]);
+
+        const points = await mod.queryHistory({
+            network: "NEM",
+            metric: "demand_mw",
+            range: "24h",
+            interval: "1h",
+        });
+
+        expect(points).toEqual([]);
+        expect(getBufferSinceMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("queryHistory routes to hourly rollups for 7d", async () => {
+        const mod = await loadModule();
+
+        getHourlyRollupKeysForRangeMock.mockReturnValue(["h1"]);
+        getNdjsonManyMock.mockResolvedValue([]);
+
+        const points = await mod.queryHistory({
+            network: "NEM",
+            metric: "price",
+            range: "7d",
+            interval: "1d",
+        });
+
+        expect(points).toEqual([]);
+        expect(getHourlyRollupKeysForRangeMock).toHaveBeenCalled();
+    });
+
+
+    it("queryHistory routes to daily rollups for 30d/90d", async () => {
+        const mod = await loadModule();
+
+        getDailyRollupKeysForDaysMock.mockReturnValue(["d1"]);
+        getNdjsonManyMock.mockResolvedValue([]);
+
+        const points = await mod.queryHistory({
+        network: "NEM",
+        metric: "price",
+        range: "30d",
+        interval: "1d",
+        });
+
+        expect(points).toEqual([]);
+        expect(getDailyRollupKeysForDaysMock).toHaveBeenCalled();
+    });
+
+    it("readHourlyRollups filters rows and maps metric", async () => {
+        const mod = await loadModule();
+
+        getHourlyRollupKeysForRangeMock.mockReturnValue(["h1", "h2"]);
+        getNdjsonManyMock.mockResolvedValue([
+        { bucket: "2026-03-17T09:00:00Z", network: "NEM", avg_price_per_mwh: 70 },
+        { bucket: "2026-03-17T10:00:00Z", network: "NEM", avg_price_per_mwh: 75, fueltech: "wind" },
+        { bucket: "2026-03-17T11:00:00Z", network: "NEM", avg_price_dollar_per_mwh: 80, region: "NSW1" },
+        ]);
+
+        const points = await mod.readHourlyRollups({
+            network: "NEM",
+            metric: "price",
+            range: "7d",
+            interval: "1h",
+            region: "NSW1",
+        });
+
+        expect(getHourlyRollupKeysForRangeMock).toHaveBeenCalled();
+        expect(points).toEqual([{ timestamp: "2026-03-17T11:00:00Z", value: 80 }]);
+    });
+
+
+    it("readHourlyRollups filters by fueltech and maps generation fallback", async () => {
+        const mod = await loadModule();
+
+        getHourlyRollupKeysForRangeMock.mockReturnValue(["h1"]);
+        getNdjsonManyMock.mockResolvedValue([
+        { bucket: "2026-03-17T09:00:00Z", network: "NEM", fueltech: "wind", avg_power_mw: 11 },
+        { bucket: "2026-03-17T10:00:00Z", network: "NEM", fueltech: "solar_utility", avg_power_mw: 22 },
+        ]);
+
+        const points = await mod.readHourlyRollups({
+            network: "NEM",
+            fueltech: "wind",
+            metric: "generation_mw",
+            range: "7d",
+            interval: "1h",
+        });
+
+        expect(points).toEqual([{ timestamp: "2026-03-17T09:00:00Z", value: 11 }]);
+    });
+
+    it("readHourlyRollups filters out fueltech summary rows and maps demand/renewables/emissions metrics", async () => {
+        const mod = await loadModule();
+
+        getHourlyRollupKeysForRangeMock.mockReturnValue(["h1"]);
+        getNdjsonManyMock.mockResolvedValue([
+            { bucket: "2026-03-17T09:00:00Z", network: "NEM", avg_demand_mw: 70, avg_renewables_pct: 35, total_emissions_tco2e: 12, avg_intensity_kgco2e_per_mwh: 100 },
+            { bucket: "2026-03-17T10:00:00Z", network: "NEM", fueltech: "wind", avg_demand_mw: 999, avg_renewables_pct: 999, total_emissions_tco2e: 999, avg_intensity_kgco2e_per_mwh: 999 },
+        ]);
+
+        await expect(
+            mod.readHourlyRollups({
+                network: "NEM",
+                metric: "demand_mw",
+                range: "24h",
+                interval: "1h",
+            }),
+        ).resolves.toEqual([{ timestamp: "2026-03-17T09:00:00Z", value: 70 }]);
+
+        await expect(
+            mod.readHourlyRollups({
+                network: "NEM",
+                metric: "renewables_pct",
+                range: "7d",
+                interval: "1h",
+            }),
+        ).resolves.toEqual([{ timestamp: "2026-03-17T09:00:00Z", value: 35 }]);
+
+        await expect(
+            mod.readHourlyRollups({
+                network: "NEM",
+                metric: "emissions_volume",
+                range: "7d",
+                interval: "1h",
+            }),
+        ).resolves.toEqual([{ timestamp: "2026-03-17T09:00:00Z", value: 12 }]);
+
+        await expect(
+            mod.readHourlyRollups({
+                network: "NEM",
+                metric: "emission_intensity",
+                range: "7d",
+                interval: "1h",
+            }),
+        ).resolves.toEqual([{ timestamp: "2026-03-17T09:00:00Z", value: 100 }]);
+    });
+
+    it("readHourlyRollups returns null values for unsupported metrics", async () => {
+        const mod = await loadModule();
+
+        getHourlyRollupKeysForRangeMock.mockReturnValue(["h1"]);
+        getNdjsonManyMock.mockResolvedValue([
+            { bucket: "2026-03-17T09:00:00Z", network: "NEM", avg_demand_mw: 70 },
+        ]);
+
+        await expect(
+            mod.readHourlyRollups({
+                network: "NEM",
+                metric: "not_a_metric" as any,
+                range: "7d",
+                interval: "1h",
+            }),
+        ).resolves.toEqual([{ timestamp: "2026-03-17T09:00:00Z", value: null }]);
+    });
+
+
+    it("readDailyRollups returns mapped daily points", async () => {
+        const mod = await loadModule();
+
+        getDailyRollupKeysForDaysMock.mockReturnValue(["d1", "d2"]);
+        getNdjsonManyMock.mockResolvedValue([
+        { bucket: "2026-03-15T00:00:00Z", network: "NEM", avg_net_generation_mw: 120 },
+        { bucket: "2026-03-16T00:00:00Z", network: "NEM", avg_power_mw: 130 },
+        ]);
+
+        const points = await mod.readDailyRollups({
+            network: "NEM",
+            metric: "generation_mw",
+            range: "30d",
+            interval: "1d",
+        });
+
+        expect(getDailyRollupKeysForDaysMock).toHaveBeenCalledWith("NEM", 30);
+        expect(points).toEqual([
+            { timestamp: "2026-03-15T00:00:00Z", value: 120 },
+            { timestamp: "2026-03-16T00:00:00Z", value: 130 },
+        ]);
+    });
+
+
+    it("computeStats returns min/max and ignores fueltech rows", async () => {
+        const mod = await loadModule();
+
+        getDailyRollupKeysForDaysMock.mockReturnValue(["d1"]);
+        getNdjsonManyMock.mockResolvedValue([
+        { bucket: "2026-03-10T00:00:00Z", network: "NEM", region: "NSW1", avg_demand_mw: 80, avg_renewables_pct: 35, avg_price_dollar_per_mwh: 60 },
+        { bucket: "2026-03-11T00:00:00Z", network: "NEM", region: "NSW1", avg_demand_mw: 90, avg_renewables_pct: 50, avg_price_per_mwh: 55 },
+        { bucket: "2026-03-12T00:00:00Z", network: "NEM", region: "NSW1", fueltech: "wind", avg_demand_mw: 999, avg_renewables_pct: 999, avg_price_dollar_per_mwh: 999 },
+        ]);
+
+        const stats = await mod.computeStats("NEM", "7d", "NSW1");
+
+        expect(stats).toEqual({
+        demand_mw: {
+            min: { value: 80, timestamp: "2026-03-10T00:00:00Z" },
+            max: { value: 90, timestamp: "2026-03-11T00:00:00Z" },
+        },
+        renewables_pct: {
+            min: { value: 35, timestamp: "2026-03-10T00:00:00Z" },
+            max: { value: 50, timestamp: "2026-03-11T00:00:00Z" },
+        },
+        price: {
+            min: { value: 55, timestamp: "2026-03-11T00:00:00Z" },
+            max: { value: 60, timestamp: "2026-03-10T00:00:00Z" },
+        },
+        });
+    });
+
+
+    it("computeStats returns null stats when no matching rows", async () => {
+        const mod = await loadModule();
+
+        getDailyRollupKeysForDaysMock.mockReturnValue(["d1"]);
+        getNdjsonManyMock.mockResolvedValue([]);
+
+        const stats = await mod.computeStats("NEM", "90d", "NSW1");
+
+        expect(stats).toEqual({
+        demand_mw: { min: { value: null, timestamp: null }, max: { value: null, timestamp: null } },
+        renewables_pct: { min: { value: null, timestamp: null }, max: { value: null, timestamp: null } },
+        price: { min: { value: null, timestamp: null }, max: { value: null, timestamp: null } },
+        });
+    });
+
+    it("getBufferSize returns recentBuffer length", async () => {
+        const mod = await loadModule();
+
+        recentBufferMock.push({ a: 1 }, { b: 2 }, { c: 3 });
+        expect(mod.getBufferSize()).toBe(3);
+    });
+});
