@@ -1,11 +1,14 @@
 import "dotenv/config";
 import Fastify from "fastify";
+import swagger from "@fastify/swagger";
+import swaggerUi from "@fastify/swagger-ui";
 import websocket from "@fastify/websocket";
 import cors from "@fastify/cors";
 
 import { warmCache } from "./cache";
 import { startPoller } from "./poller";
 import restRoutes from "./routes/rest";
+import { swaggerOpenApi } from "./swagger";
 import sseRoutes from "./routes/sse";
 import wsRoutes from "./routes/ws";
 
@@ -33,10 +36,17 @@ async function main(): Promise<void> {
     origin: true,
   });
 
+  await fastify.register(swagger, {
+    openapi: swaggerOpenApi,
+  });
+
   await fastify.register(websocket);
   await fastify.register(restRoutes);
   await fastify.register(sseRoutes);
   await fastify.register(wsRoutes);
+  await fastify.register(swaggerUi, {
+    routePrefix: "/docs",
+  });
 
   await warmCache(["NEM", "WEM"]);
   fastify.log.info("Warm cache completed.");
@@ -46,6 +56,7 @@ async function main(): Promise<void> {
     host: "0.0.0.0",
   });
 
+  fastify.log.info(`Swagger UI available at http://0.0.0.0:${port}/docs`);
   fastify.log.info("First poll is starting.");
   startPoller();
 }
