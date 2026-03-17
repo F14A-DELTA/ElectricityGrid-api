@@ -138,3 +138,198 @@ describe("system tests", () => {
   });
 
  
+  it("returns live snapshots and region pricing from the real route stack", async () => {
+    const { app, cache } = await buildSystemApp();
+
+    try {
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM"),
+          WEM: makeSnapshot("WEM"),
+        },
+        new Date("2026-03-17T10:00:00Z"),
+      );
+
+      const live = await app.inject({
+        method: "GET",
+        url: "/v1/live?network=NEM",
+        headers: AUTH_HEADER,
+      });
+      expect(live.statusCode).toBe(200);
+      expect(live.json()).toMatchObject({
+        success: true,
+        updated_at: "2026-03-17T10:00:00Z",
+        data: {
+          network: "NEM",
+          summary: {
+            net_generation_mw: 70,
+          },
+        },
+      });
+
+      const price = await app.inject({
+        method: "GET",
+        url: "/v1/live/price",
+        headers: AUTH_HEADER,
+      });
+      expect(price.statusCode).toBe(200);
+      expect(price.json().data).toEqual(
+        expect.arrayContaining([
+          {
+            network: "NEM",
+            region: "NSW1",
+            price_dollar_per_mwh: 80,
+            demand_mw: 60,
+          },
+          {
+            network: "WEM",
+            region: "WEM",
+            price_dollar_per_mwh: 50,
+            demand_mw: 35,
+          },
+        ]),
+      );
+
+      const region = await app.inject({
+        method: "GET",
+        url: "/v1/live/region/NSW1",
+        headers: AUTH_HEADER,
+      });
+      expect(region.statusCode).toBe(200);
+      expect(region.json()).toMatchObject({
+        success: true,
+        updated_at: "2026-03-17T10:00:00Z",
+        data: {
+          network: "NEM",
+          region: "NSW1",
+          price_dollar_per_mwh: 80,
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("serves 24h history from the in-memory buffer using the real query code", async () => {
+    const { app, cache } = await buildSystemApp();
+
+    try {
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM", {
+            updated_at: "2026-03-17T09:55:00Z",
+            regions: {
+              NSW1: {
+                ...makeSnapshot("NEM").regions.NSW1,
+                generation: [{ fueltech: "wind", label: "Wind", power_mw: 30, proportion_pct: 50, price_dollar_per_mwh: 70, total_energy_mwh: 15 }],
+              },
+            },
+          }),
+        },
+        new Date("2026-03-17T09:55:00Z"),
+      );
+
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM"),
+        },
+        new Date("2026-03-17T10:00:00Z"),
+      );
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/v1/history?metric=price&network=NEM&range=24h&interval=5m&region=NSW1&fueltech=wind",
+        headers: AUTH_HEADER,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        success: true,
+        data: {
+          metric: "price",
+          interval: "5m",
+          range: "24h",
+          series: [
+            { timestamp: "2026-03-17T09:55:00Z", value: 70 },
+            { timestamp: "2026-03-17T10:00:00Z", value: 75 },
+          ],
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("serves historical rollups and computed stats through the real HTTP endpoints", async () => {
+    const { app, cache } = await buildSystemApp();
+
+    try {
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM"),
+        },
+        new Date("2026-03-17T10:00:00Z"),
+      );
+
+      s3Mocks.getHourlyRollupKeysForRangeMock.mockReturnValue(["hourly-1"]);
+      s3Mocks.getDailyRollupKeysForDaysMock.mockReturnValue(["daily-1"]);
+      s3Mocks.getNdjsonManyMock
+        .mockResolvedValueOnce([
+          {
+            bucket: "2026-03-16T09:00:00Z",
+            network: "NEM",
+            region: "NSW1",
+            avg_price_dollar_per_mwh: 81,
+          },
+        ])
+        .mockResolvedValueOnce([
+          {
+            bucket: "2026-03-10T00:00:00Z",
+            network: "NEM",
+            region: "NSW1",
+            avg_demand_mw: 80,
+            avg_renewables_pct: 35,
+            avg_price_dollar_per_mwh: 60,
+          },
+          {
+            bucket: "2026-03-11T00:00:00Z",
+            network: "NEM",
+            region: "NSW1",
+            avg_demand_mw: 90,
+            avg_renewables_pct: 50,
+            avg_price_per_mwh: 55,
+          },
+        ]);
+
+      const history = await app.inject({
+        method: "GET",
+        url: "/v1/history?metric=price&network=NEM&range=7d&interval=1h&region=NSW1",
+        headers: AUTH_HEADER,
+      });
+      expect(history.statusCode).toBe(200);
+      expect(history.json().data.series).toEqual([{ timestamp: "2026-03-16T09:00:00Z", value: 81 }]);
+
+      const stats = await app.inject({
+        method: "GET",
+        url: "/v1/stats?range=7d&network=NEM&region=NSW1",
+        headers: AUTH_HEADER,
+      });
+      expect(stats.statusCode).toBe(200);
+      expect(stats.json()).toMatchObject({
+        success: true,
+        data: {
+          demand_mw: {
+            min: { value: 80, timestamp: "2026-03-10T00:00:00Z" },
+            max: { value: 90, timestamp: "2026-03-11T00:00:00Z" },
+          },
+          price: {
+            min: { value: 55, timestamp: "2026-03-11T00:00:00Z" },
+            max: { value: 60, timestamp: "2026-03-10T00:00:00Z" },
+          },
+        },
+      });
+    } finally {
+      await app.close();
+    }
+  });
+
