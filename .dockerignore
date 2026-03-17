@@ -1,0 +1,11 @@
+.git
+.github
+coverage
+dist
+node_modules
+npm-debug.log
+README.md
+Dockerfile*
+src/**/*.test.ts
+src/**/*.spec.ts
+tests
