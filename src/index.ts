@@ -30,13 +30,7 @@ async function main(): Promise<void> {
   });
 
   await fastify.register(cors, {
-    origin: "https://editor.swagger.io",
-    methods: ["GET"],
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "x-api-key",
-    ],
+    origin: true,
   });
 
   await fastify.register(websocket);
