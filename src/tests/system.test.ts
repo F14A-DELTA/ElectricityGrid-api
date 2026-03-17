@@ -333,3 +333,153 @@ describe("system tests", () => {
     }
   });
 
+
+  it("rejects invalid history queries", async () => {
+    const { app } = await buildSystemApp();
+
+    try {
+      const missingMetric = await app.inject({
+        method: "GET",
+        url: "/v1/history?network=NEM",
+        headers: AUTH_HEADER,
+      });
+      expect(missingMetric.statusCode).toBe(400);
+      expect(missingMetric.json()).toEqual({ success: false, error: "Invalid history query" });
+
+      const invalidInterval = await app.inject({
+        method: "GET",
+        url: "/v1/history?metric=price&network=NEM&range=7d&interval=2h",
+        headers: AUTH_HEADER,
+      });
+      expect(invalidInterval.statusCode).toBe(400);
+      expect(invalidInterval.json()).toEqual({ success: false, error: "Invalid history query" });
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("uses default history query params when only metric is provided", async () => {
+    const { app, cache } = await buildSystemApp();
+
+    try {
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM"),
+        },
+        new Date("2026-03-17T10:00:00Z"),
+      );
+
+      s3Mocks.getHourlyRollupKeysForRangeMock.mockReturnValue(["hourly-default"]);
+      s3Mocks.getNdjsonManyMock.mockResolvedValue([
+        {
+          bucket: "2026-03-16T09:00:00Z",
+          network: "NEM",
+          avg_price_dollar_per_mwh: 79,
+        },
+      ]);
+
+      const response = await app.inject({
+        method: "GET",
+        url: "/v1/history?metric=price",
+        headers: AUTH_HEADER,
+      });
+
+      expect(response.statusCode).toBe(200);
+      expect(response.json()).toMatchObject({
+        success: true,
+        updated_at: "2026-03-17T10:00:00Z",
+        data: {
+          metric: "price",
+          interval: "1h",
+          range: "7d",
+          series: [{ timestamp: "2026-03-16T09:00:00Z", value: 79 }],
+        },
+      });
+      expect(s3Mocks.getHourlyRollupKeysForRangeMock).toHaveBeenCalledTimes(1);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("serves region fueltech history from loads and curtailment fallback rows", async () => {
+    const { app, cache } = await buildSystemApp();
+
+    try {
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM", {
+            updated_at: "2026-03-17T09:55:00Z",
+            regions: {
+              NSW1: {
+                ...makeSnapshot("NEM").regions.NSW1,
+                generation: [],
+                loads: [{ fueltech: "battery_charging", label: "Battery (Charging)", power_mw: 12, proportion_pct: 20, price_dollar_per_mwh: 25, total_energy_mwh: 6 }],
+                curtailment: [],
+              },
+            },
+          }),
+        },
+        new Date("2026-03-17T09:55:00Z"),
+      );
+
+      cache.addSnapshotsToBuffer(
+        {
+          NEM: makeSnapshot("NEM", {
+            updated_at: "2026-03-17T10:00:00Z",
+            regions: {
+              NSW1: {
+                ...makeSnapshot("NEM").regions.NSW1,
+                generation: [],
+                loads: [],
+                curtailment: [{ fueltech: "solar_utility", label: "Solar (Utility)", power_mw: 3, proportion_pct: 4.3 }],
+              },
+            },
+          }),
+        },
+        new Date("2026-03-17T10:00:00Z"),
+      );
+
+      const loadsResponse = await app.inject({
+        method: "GET",
+        url: "/v1/history?metric=generation_mw&network=NEM&range=24h&interval=5m&region=NSW1&fueltech=battery_charging",
+        headers: AUTH_HEADER,
+      });
+
+      expect(loadsResponse.statusCode).toBe(200);
+      expect(loadsResponse.json().data.series).toEqual([
+        { timestamp: "2026-03-17T09:55:00Z", value: 12 },
+        { timestamp: "2026-03-17T10:00:00Z", value: null },
+      ]);
+
+      const curtailmentResponse = await app.inject({
+        method: "GET",
+        url: "/v1/history?metric=generation_mw&network=NEM&range=24h&interval=5m&region=NSW1&fueltech=solar_utility",
+        headers: AUTH_HEADER,
+      });
+
+      expect(curtailmentResponse.statusCode).toBe(200);
+      expect(curtailmentResponse.json().data.series).toEqual([
+        { timestamp: "2026-03-17T09:55:00Z", value: null },
+        { timestamp: "2026-03-17T10:00:00Z", value: 3 },
+      ]);
+    } finally {
+      await app.close();
+    }
+  });
+
+  it("rejects unauthorized SSE connections before opening a stream", async () => {
+    const { app } = await buildSystemApp();
+
+    try {
+      const response = await app.inject({
+        method: "GET",
+        url: "/v1/events",
+      });
+
+      expect(response.statusCode).toBe(401);
+      expect(response.json()).toEqual({ success: false, error: "Unauthorized" });
+    } finally {
+      await app.close();
+    }
+  });
+});
