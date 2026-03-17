@@ -1,13 +1,81 @@
+name: Test Promotion Gates
 
 on:
   push:
+    branches: [ "develop", "staging", "main" ]
   pull_request:
+    branches: [ "develop", "staging", "main" ]
+  workflow_dispatch:
 
 jobs:
-  test:
+  test-dev:
+    name: Dev Validation
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'develop') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'develop')
     runs-on: ubuntu-latest
+    environment: dev
+    permissions:
+      contents: read
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
       - run: npm ci
       - run: npm test
       - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-dev
+          path: coverage
+
+  test-staging:
+    name: Staging Validation
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'staging') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'staging')
+    runs-on: ubuntu-latest
+    environment: staging
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-staging
+          path: coverage
+
+  test-production:
+    name: Production Validation
+    if: |
+      (github.event_name == 'push' && github.ref_name == 'main') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'main')
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run test:coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-production
+          path: coverage
