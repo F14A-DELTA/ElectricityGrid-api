@@ -4,8 +4,10 @@ COPY package*.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
+RUN npm prune --omit=dev
 
 FROM node:20-alpine AS runtime
+ENV NODE_ENV=production
 WORKDIR /app
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
