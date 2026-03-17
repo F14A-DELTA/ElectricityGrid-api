@@ -125,7 +125,7 @@ describe("system tests", () => {
         data: {
           status: "ok",
           buffer_size: 0,
-          last_poll_at: null,
+          last_poll_at: "",
         },
       });
 
