@@ -141,7 +141,7 @@ async function generate(): Promise<void> {
   const spec = fastify.swagger();
 
   // Write to file
-  const outputPath = path.resolve(__dirname, "../swagger.json");
+  const outputPath = path.resolve(__dirname, "../../swagger.json");
   fs.writeFileSync(outputPath, JSON.stringify(spec, null, 2));
 
   console.log(`swagger.json generated at: ${outputPath}`);
