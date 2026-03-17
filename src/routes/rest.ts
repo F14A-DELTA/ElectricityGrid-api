@@ -49,7 +49,31 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     await enforceAuth(request, reply);
   });
 
-  fastify.get("/v1/health", async (_request, reply) => {
+  fastify.get("/v1/health", {
+    schema: {
+      summary: "Health check",
+      security: [],
+      response: {
+        200: {
+          description: "Server is healthy",
+          type: "object",
+          properties: {
+            success:    { type: "boolean", example: true },
+            updated_at: { type: "string", format: "date-time" },
+            data: {
+              type: "object",
+              properties: {
+                uptime:       { type: "number" },
+                last_poll_at: { type: "string", format: "date-time" },
+                buffer_size:  { type: "integer" },
+                status:       { type: "string", example: "ok" },
+              },
+            },
+          },
+        },
+      },
+    },
+  }, async (_request, reply) => {
     return sendSuccess(
       reply,
       {

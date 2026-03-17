@@ -24,7 +24,7 @@ async function generate(): Promise<void> {
       },
       servers: [
         { url: "http://localhost:3000", description: "Local development" },
-        { url: "https://api.yourdomain.com", description: "Production" },
+        { url: "http://ec2-54-226-204-58.compute-1.amazonaws.com:3000", description: "Production" },
       ],
       components: {
         securitySchemes: {

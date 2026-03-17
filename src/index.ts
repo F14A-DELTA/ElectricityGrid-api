@@ -1,6 +1,7 @@
 import "dotenv/config";
 import Fastify from "fastify";
 import websocket from "@fastify/websocket";
+import cors from "@fastify/cors";
 
 import { warmCache } from "./cache";
 import { startPoller } from "./poller";
@@ -26,6 +27,16 @@ async function main(): Promise<void> {
 
   const fastify = Fastify({
     logger: true,
+  });
+
+  await fastify.register(cors, {
+    origin: "https://editor.swagger.io",
+    methods: ["GET"],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "x-api-key",
+    ],
   });
 
   await fastify.register(websocket);
