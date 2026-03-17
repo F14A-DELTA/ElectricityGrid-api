@@ -213,4 +213,170 @@ describe("applySubscriptions", () => {
     expect(result.NEM?.regions.NSW1).toBeDefined();
     expect(result.NEM?.regions.QLD1).toBeUndefined();
   });
+
+  it("filters snapshots down to price-only metric subscriptions", () => {
+    const result = applySubscriptions(
+      { NEM: mocks.latestSnapshotMock.NEM as any, WEM: mocks.latestSnapshotMock.WEM as any },
+      { regions: new Set(["NSW1"]), metrics: new Set(["price"]) },
+    );
+
+    expect(result.NEM?.summary.net_generation_mw).toBeNull();
+    expect(result.NEM?.summary.renewables_pct).toBeNull();
+    expect(result.NEM?.summary.demand_mw).toBeNull();
+    expect(result.NEM?.generation).toHaveLength(1);
+    expect(result.NEM?.loads).toHaveLength(1);
+    expect(result.NEM?.curtailment).toEqual([]);
+    expect(result.NEM?.emissions).toEqual({
+      volume_tco2e_per_30m: null,
+      intensity_kgco2e_per_mwh: null,
+    });
+    expect(result.NEM?.regions.NSW1?.price_dollar_per_mwh).toBe(100);
+    expect(result.NEM?.regions.NSW1?.emissions).toEqual({
+      volume_tco2e_per_30m: null,
+      intensity_kgco2e_per_mwh: null,
+    });
+  });
+
+  it("preserves emissions when only emissions metrics are subscribed", () => {
+    const result = applySubscriptions(
+      { NEM: mocks.latestSnapshotMock.NEM as any },
+      { regions: new Set(["NSW1"]), metrics: new Set(["emissions_volume"]) },
+    );
+
+    expect(result.NEM?.generation).toEqual([]);
+    expect(result.NEM?.loads).toEqual([]);
+    expect(result.NEM?.curtailment).toEqual([]);
+    expect(result.NEM?.summary.net_generation_mw).toBeNull();
+    expect(result.NEM?.emissions).toEqual({
+      volume_tco2e_per_30m: 7,
+      intensity_kgco2e_per_mwh: 110,
+    });
+    expect(result.NEM?.regions.NSW1?.emissions).toEqual({
+      volume_tco2e_per_30m: 7,
+      intensity_kgco2e_per_mwh: 110,
+    });
+  });
+
+  it("retains generation, renewables, demand, and emission intensity metrics when subscribed", () => {
+    const result = applySubscriptions(
+      { NEM: mocks.latestSnapshotMock.NEM as any },
+      {
+        regions: new Set(["NSW1"]),
+        metrics: new Set(["generation_mw", "renewables_pct", "demand_mw", "emission_intensity"]),
+      },
+    );
+
+    expect(result.NEM?.summary).toEqual({
+      net_generation_mw: 70,
+      renewables_mw: 30,
+      renewables_pct: 42.9,
+      demand_mw: 60,
+    });
+    expect(result.NEM?.generation).toHaveLength(1);
+    expect(result.NEM?.loads).toHaveLength(1);
+    expect(result.NEM?.curtailment).toHaveLength(1);
+    expect(result.NEM?.emissions).toEqual({
+      volume_tco2e_per_30m: 7,
+      intensity_kgco2e_per_mwh: 110,
+    });
+    expect(result.NEM?.regions.NSW1?.summary).toEqual({
+      net_generation_mw: 70,
+      renewables_mw: 30,
+      renewables_pct: 42.9,
+      demand_mw: 60,
+    });
+  });
+
+  it("handles zero-generation selected regions when recomputing proportions", () => {
+    const zeroRegion = {
+      price_dollar_per_mwh: 0,
+      demand_mw: 0,
+      summary: {
+        net_generation_mw: 0,
+        renewables_mw: 0,
+        renewables_pct: null,
+        demand_mw: 0,
+      },
+      generation: [{ fueltech: "wind", label: "Wind", power_mw: 0, proportion_pct: null, price_dollar_per_mwh: 0, total_energy_mwh: 0 }],
+      loads: [{ fueltech: "battery_charging", label: "Battery (Charging)", power_mw: 5, proportion_pct: null, price_dollar_per_mwh: 0, total_energy_mwh: 1 }],
+      curtailment: [{ fueltech: "wind", label: "Wind", power_mw: 2, proportion_pct: null }],
+      emissions: { volume_tco2e_per_30m: 0, intensity_kgco2e_per_mwh: null },
+    };
+
+    const result = applySubscriptions(
+      { NEM: { ...(mocks.latestSnapshotMock.NEM as any), regions: { ZERO: zeroRegion } } },
+      { regions: new Set(["ZERO"]), metrics: new Set(["generation_mw"]) },
+    );
+
+    expect(result.NEM?.summary).toEqual({
+      net_generation_mw: 0,
+      renewables_mw: null,
+      renewables_pct: null,
+      demand_mw: null,
+    });
+    expect(result.NEM?.generation[0]?.proportion_pct).toBeNull();
+    expect(result.NEM?.loads[0]?.proportion_pct).toBeNull();
+    expect(result.NEM?.curtailment[0]?.proportion_pct).toBeNull();
+  });
+
+  it("merges duplicate load and curtailment fueltechs and preserves undefined regions", () => {
+    const vicRegion = {
+      price_dollar_per_mwh: 10,
+      demand_mw: 5,
+      summary: {
+        net_generation_mw: 20,
+        renewables_mw: 10,
+        renewables_pct: 50,
+        demand_mw: 5,
+      },
+      generation: [{ fueltech: "wind", label: "Wind", power_mw: 20, proportion_pct: 100, price_dollar_per_mwh: 10, total_energy_mwh: 8 }],
+      loads: [{ fueltech: "battery_charging", label: "Battery (Charging)", power_mw: 2, proportion_pct: 10, price_dollar_per_mwh: 5, total_energy_mwh: 1 }],
+      curtailment: [{ fueltech: "wind", label: "Wind", power_mw: 1, proportion_pct: 5 }],
+      emissions: { volume_tco2e_per_30m: 2, intensity_kgco2e_per_mwh: 20 },
+    };
+    const saRegion = {
+      price_dollar_per_mwh: 20,
+      demand_mw: 7,
+      summary: {
+        net_generation_mw: 30,
+        renewables_mw: 15,
+        renewables_pct: 50,
+        demand_mw: 7,
+      },
+      generation: [{ fueltech: "wind", label: "Wind", power_mw: 30, proportion_pct: 100, price_dollar_per_mwh: 20, total_energy_mwh: 12 }],
+      loads: [{ fueltech: "battery_charging", label: "Battery (Charging)", power_mw: 3, proportion_pct: 10, price_dollar_per_mwh: 5, total_energy_mwh: 2 }],
+      curtailment: [{ fueltech: "wind", label: "Wind", power_mw: 2, proportion_pct: 6.7 }],
+      emissions: { volume_tco2e_per_30m: 3, intensity_kgco2e_per_mwh: 30 },
+    };
+
+    const result = applySubscriptions(
+      {
+        NEM: {
+          ...(mocks.latestSnapshotMock.NEM as any),
+          regions: { VIC1: vicRegion, SA1: saRegion, TAS1: undefined },
+        },
+      },
+      { regions: new Set(["VIC1", "SA1", "TAS1"]), metrics: new Set(["generation_mw", "emission_intensity"]) },
+    );
+
+    expect(result.NEM?.loads).toEqual([
+      {
+        fueltech: "battery_charging",
+        label: "Battery (Charging)",
+        power_mw: 5,
+        proportion_pct: 10,
+        price_dollar_per_mwh: null,
+        total_energy_mwh: 3,
+      },
+    ]);
+    expect(result.NEM?.curtailment).toEqual([
+      {
+        fueltech: "wind",
+        label: "Wind",
+        power_mw: 3,
+        proportion_pct: 6,
+      },
+    ]);
+    expect(result.NEM?.regions.TAS1).toBeUndefined();
+  });
 });
