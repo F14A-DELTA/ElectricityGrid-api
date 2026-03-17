@@ -6,7 +6,13 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
-      exclude: ["**/*.test.ts", "**/*.spec.ts", "src/**/*.d.ts"],
+      exclude: [
+        "**/*.test.ts",
+        "**/*.spec.ts",
+        "src/**/*.d.ts",
+        "src/generate-swagger.ts",
+        "src/types.ts",
+      ],
       reporter: ["text", "html"],
     },
   },
