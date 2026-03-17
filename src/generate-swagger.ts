@@ -7,8 +7,8 @@ import * as path from "path";
 
 import restRoutes from "./routes/rest";
 import sseRoutes from "./routes/sse";
-import { swaggerOpenApi } from "./swagger";
 import wsRoutes from "./routes/ws";
+import { swaggerOpenApi } from "./swagger";
 
 async function generate(): Promise<void> {
   const fastify = Fastify({ logger: false });

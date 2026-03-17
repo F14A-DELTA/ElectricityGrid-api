@@ -8,9 +8,9 @@ import cors from "@fastify/cors";
 import { warmCache } from "./cache";
 import { startPoller } from "./poller";
 import restRoutes from "./routes/rest";
-import { swaggerOpenApi } from "./swagger";
 import sseRoutes from "./routes/sse";
 import wsRoutes from "./routes/ws";
+import { swaggerOpenApi } from "./swagger";
 
 function getRequiredEnv(name: string, fallbacks: string[] = []): string {
   const value = process.env[name] ?? fallbacks.map((fallback) => process.env[fallback]).find((candidate) => candidate);
@@ -39,14 +39,14 @@ async function main(): Promise<void> {
   await fastify.register(swagger, {
     openapi: swaggerOpenApi,
   });
+  await fastify.register(swaggerUi, {
+    routePrefix: "/docs",
+  });
 
   await fastify.register(websocket);
   await fastify.register(restRoutes);
   await fastify.register(sseRoutes);
   await fastify.register(wsRoutes);
-  await fastify.register(swaggerUi, {
-    routePrefix: "/docs",
-  });
 
   await warmCache(["NEM", "WEM"]);
   fastify.log.info("Warm cache completed.");
