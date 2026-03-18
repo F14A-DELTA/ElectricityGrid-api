@@ -1,5 +1,5 @@
 import { getBufferSince, recentBuffer } from "./cache";
-import { getDailyRollupKeysForDays, getHourlyRollupKeysForRange, getNdjsonMany } from "./s3";
+import { getDailyRollupKeysForDays, getHourlyRollupKeysForRange, getJsonMany, getNdjsonMany, getRawKeysForRange } from "./s3";
 import type { EnergySnapshot, HistoryPoint, HistoryQueryParams, RangeStatPoint, RangeStats, RegionSnapshot, RollupRow } from "./types";
 
 function getRangeStart(range: HistoryQueryParams["range"]): Date {
@@ -112,28 +112,60 @@ function getRollupMetricValue(row: RollupRow, metric: HistoryQueryParams["metric
   }
 }
 
-const SUMMARY_METRICS = new Set<HistoryQueryParams["metric"]>([
-  "generation_mw",
-  "demand_mw",
-  "emissions_volume",
-  "emission_intensity",
-  "renewables_pct",
-  "price",
-]);
-
 function filterRollupRows(
   rows: RollupRow[],
-  params: Pick<HistoryQueryParams, "region" | "fueltech" | "metric">,
+  params: Pick<HistoryQueryParams, "region" | "fueltech">,
 ): RollupRow[] {
   return rows.filter((row) => {
-    if (params.region && row.region !== params.region) return false;
-    if (params.fueltech && row.fueltech !== params.fueltech) return false;
-    if (!params.fueltech && row.fueltech && SUMMARY_METRICS.has(params.metric)) {
+    if (params.region) {
+      if (row.region !== params.region) return false;
+    } else if (row.region) {
+      return false;
+    }
+
+    if (params.fueltech) {
+      if (row.fueltech !== params.fueltech) return false;
+    } else if (row.fueltech) {
       return false;
     }
 
     return true;
   });
+}
+
+function mapRollupRowsToHistoryPoints(
+  rows: RollupRow[],
+  metric: HistoryQueryParams["metric"],
+): HistoryPoint[] {
+  const deduped = new Map<string, HistoryPoint>();
+
+  for (const row of rows) {
+    const point = {
+      timestamp: row.bucket,
+      value: getRollupMetricValue(row, metric),
+    } satisfies HistoryPoint;
+
+    const existing = deduped.get(point.timestamp);
+    if (!existing || (existing.value === null && point.value !== null)) {
+      deduped.set(point.timestamp, point);
+    }
+  }
+
+  return Array.from(deduped.values()).sort(
+    (left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime(),
+  );
+}
+
+function dedupeHistoryPoints(points: HistoryPoint[]): HistoryPoint[] {
+  const deduped = new Map<string, HistoryPoint>();
+
+  for (const point of points) {
+    deduped.set(point.timestamp, point);
+  }
+
+  return Array.from(deduped.values()).sort(
+    (left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime(),
+  );
 }
 
 function selectStat(rows: RollupRow[], metricValue: (row: RollupRow) => number | null, direction: "min" | "max"): RangeStatPoint {
@@ -159,7 +191,11 @@ function selectStat(rows: RollupRow[], metricValue: (row: RollupRow) => number |
 }
 
 export async function queryHistory(params: HistoryQueryParams): Promise<HistoryPoint[]> {
-  if (params.range === "24h" || params.interval === "5m") {
+  if (params.interval === "5m") {
+    return readRawHistory(params);
+  }
+
+  if (params.range === "24h") {
     return readFromBuffer(params);
   }
 
@@ -168,6 +204,23 @@ export async function queryHistory(params: HistoryQueryParams): Promise<HistoryP
   }
 
   return readDailyRollups(params);
+}
+
+export async function readRawHistory(params: HistoryQueryParams): Promise<HistoryPoint[]> {
+  const from = getRangeStart(params.range);
+  const keys = getRawKeysForRange(params.network, from, new Date());
+  const snapshots = (await getJsonMany<EnergySnapshot>(keys)).filter(
+    (snapshot): snapshot is EnergySnapshot => snapshot !== null,
+  );
+
+  const points = snapshots
+    .map((snapshot) => ({
+      timestamp: snapshot.updated_at,
+      value: getMetricFromSnapshot(snapshot, params),
+    }))
+    .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
+
+  return dedupeHistoryPoints(points);
 }
 
 export function readFromBuffer(params: HistoryQueryParams): HistoryPoint[] {
@@ -185,13 +238,7 @@ export function readFromBuffer(params: HistoryQueryParams): HistoryPoint[] {
     .filter((point): point is HistoryPoint => point !== null)
     .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
 
-  const deduped = new Map<string, HistoryPoint>();
-  for (const point of points) {
-    deduped.set(point.timestamp, point);
-  }
-  return Array.from(deduped.values()).sort(
-    (left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime(),
-  );
+  return dedupeHistoryPoints(points);
 }
 
 export async function readHourlyRollups(params: HistoryQueryParams): Promise<HistoryPoint[]> {
@@ -199,24 +246,14 @@ export async function readHourlyRollups(params: HistoryQueryParams): Promise<His
   const keys = getHourlyRollupKeysForRange(params.network, from, new Date());
   const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
 
-  return rows
-    .map((row) => ({
-      timestamp: row.bucket,
-      value: getRollupMetricValue(row, params.metric),
-    }))
-    .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
+  return mapRollupRowsToHistoryPoints(rows, params.metric);
 }
 
 export async function readDailyRollups(params: HistoryQueryParams): Promise<HistoryPoint[]> {
   const numDays = params.range === "30d" ? 30 : 90;
   const keys = getDailyRollupKeysForDays(params.network, numDays);
   const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
-  return rows
-    .map((row) => ({
-      timestamp: row.bucket,
-      value: getRollupMetricValue(row, params.metric),
-    }))
-    .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
+  return mapRollupRowsToHistoryPoints(rows, params.metric);
 }
 
 export async function computeStats(
@@ -228,6 +265,7 @@ export async function computeStats(
   const keys = getDailyRollupKeysForDays(network, numDays);
   const rows = (await getNdjsonMany<RollupRow>(keys)).filter((row) => {
     if (row.fueltech) return false;
+    if (!region && row.region) return false;
     if (region && row.region !== region) return false;
     return true;
   });
