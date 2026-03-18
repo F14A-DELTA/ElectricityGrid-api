@@ -220,6 +220,19 @@ export function getHourlyRollupKeysForRange(network: string, from: Date, to: Dat
   return keys;
 }
 
+export function getDailyRollupKeysForRange(network: string, from: Date, to: Date): string[] {
+  const keys: string[] = [];
+  const cursor = startOfUtcDay(from);
+  const end = startOfUtcDay(to);
+
+  while (cursor <= end) {
+    keys.push(getDailyRollupKey(network, cursor.getUTCFullYear(), cursor.getUTCMonth() + 1, cursor.getUTCDate()));
+    cursor.setUTCDate(cursor.getUTCDate() + 1);
+  }
+
+  return keys;
+}
+
 export function getDailyRollupKeysForDays(network: string, numDays: number): string[] {
   const keys: string[] = [];
   const cursor = startOfUtcDay(new Date());
