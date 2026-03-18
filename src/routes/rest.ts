@@ -4,6 +4,7 @@ import type { FastifyPluginAsync, FastifyReply } from "fastify";
 import { enforceAuth } from "../auth";
 import { latestSnapshot, recentBuffer } from "../cache";
 import { lastPollAt } from "../poller";
+import { buildDatasetEnvelope } from "../response-format";
 import { computeStats, queryHistory } from "../s3-query";
 import type { HistoryQueryParams, NetworkCode } from "../types";
 
@@ -32,12 +33,28 @@ function updatedAtForResponse(network?: NetworkCode): string {
   return timestamps.at(-1) ?? new Date().toISOString();
 }
 
-function sendSuccess(reply: FastifyReply, payload: unknown, updatedAt: string) {
-  return reply.send({
-    success: true,
-    updated_at: updatedAt,
-    data: payload,
-  });
+function sendSuccess(
+  reply: FastifyReply,
+  payload: unknown,
+  options: {
+    datasetType: string;
+    eventType: string;
+    updatedAt: string;
+    eventTimestamp?: string;
+    duration?: number;
+    durationUnit?: string;
+  },
+) {
+  return reply.send(
+    buildDatasetEnvelope(payload, {
+      datasetType: options.datasetType,
+      eventType: options.eventType,
+      datasetTimestamp: options.updatedAt,
+      eventTimestamp: options.eventTimestamp,
+      duration: options.duration,
+      durationUnit: options.durationUnit,
+    }),
+  );
 }
 
 const restRoutes: FastifyPluginAsync = async (fastify) => {
@@ -58,15 +75,39 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
           description: "Server is healthy",
           type: "object",
           properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
+            data_source:  { type: "string", example: "openelectricity" },
+            dataset_type: { type: "string", example: "health_status" },
+            dataset_id:   { type: "string" },
+            time_object: {
               type: "object",
               properties: {
-                uptime:       { type: "number" },
-                last_poll_at: { type: "string", format: "date-time" },
-                buffer_size:  { type: "integer" },
-                status:       { type: "string", example: "ok" },
+                timestamp: { type: "string", format: "date-time" },
+                timezone:  { type: "string", example: "UTC" },
+              },
+            },
+            events: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  time_object: {
+                    type: "object",
+                    properties: {
+                      timestamp: { type: "string", format: "date-time" },
+                      timezone:  { type: "string", example: "UTC" },
+                    },
+                  },
+                  event_type: { type: "string", example: "health_check" },
+                  attribute: {
+                    type: "object",
+                    properties: {
+                      uptime:       { type: "number" },
+                      last_poll_at: { type: "string", format: "date-time", nullable: true },
+                      buffer_size:  { type: "integer" },
+                      status:       { type: "string", example: "ok" },
+                    },
+                  },
+                },
               },
             },
           },
@@ -82,7 +123,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         buffer_size: recentBuffer.length,
         status: "ok",
       },
-      new Date().toISOString(),
+      {
+        datasetType: "health_status",
+        eventType: "health_check",
+        updatedAt: new Date().toISOString(),
+      },
     );
   });
 
@@ -103,10 +148,18 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.code(404).send({ success: false, error: "Snapshot not available" });
       }
 
-      return sendSuccess(reply, snapshot, snapshot.updated_at);
+      return sendSuccess(reply, snapshot, {
+        datasetType: "live_snapshot",
+        eventType: "network_snapshot",
+        updatedAt: snapshot.updated_at,
+      });
     }
 
-    return sendSuccess(reply, latestSnapshot, updatedAtForResponse());
+    return sendSuccess(reply, latestSnapshot, {
+      datasetType: "live_snapshot_collection",
+      eventType: "snapshot_collection",
+      updatedAt: updatedAtForResponse(),
+    });
   });
 
   fastify.get("/v1/live/region/:region", async (request, reply) => {
@@ -136,7 +189,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         updated_at: snapshot.updated_at,
         ...regionData,
       },
-      snapshot.updated_at,
+      {
+        datasetType: "regional_live_snapshot",
+        eventType: "regional_snapshot",
+        updatedAt: snapshot.updated_at,
+      },
     );
   });
 
@@ -154,7 +211,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       })),
     );
 
-    return sendSuccess(reply, prices, updatedAtForResponse());
+    return sendSuccess(reply, prices, {
+      datasetType: "live_price_snapshot",
+      eventType: "regional_price_snapshot",
+      updatedAt: updatedAtForResponse(),
+    });
   });
 
   fastify.get("/v1/stats", async (request, reply) => {
@@ -167,7 +228,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const stats = await computeStats(network, range, query.region);
-    return sendSuccess(reply, stats, updatedAtForResponse(network));
+    return sendSuccess(reply, stats, {
+      datasetType: "range_statistics",
+      eventType: "statistics_summary",
+      updatedAt: updatedAtForResponse(network),
+    });
   });
 
   fastify.get("/v1/history", async (request, reply) => {
@@ -198,7 +263,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         range,
         series,
       },
-      updatedAtForResponse(network),
+      {
+        datasetType: "historical_series",
+        eventType: "history_series",
+        updatedAt: updatedAtForResponse(network),
+      },
     );
   });
 };
