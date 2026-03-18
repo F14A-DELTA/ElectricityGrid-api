@@ -21,6 +21,19 @@ const VALID_METRICS = new Set<HistoryQueryParams["metric"]>([
   "renewables_pct",
 ]);
 
+function parseIsoDateTime(value?: string): Date | null {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return null;
+  }
+
+  return parsed;
+}
+
 function updatedAtForResponse(network?: NetworkCode): string {
   if (network && latestSnapshot?.[network]) {
     return latestSnapshot[network]!.updated_at;
@@ -241,8 +254,18 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     const interval = query.interval ?? "1h";
     const range = query.range ?? "7d";
     const network = query.network ?? "NEM";
+    const hasCustomWindow = typeof query.start === "string" || typeof query.end === "string";
+    const start = parseIsoDateTime(query.start);
+    const end = parseIsoDateTime(query.end);
 
-    if (!metric || !VALID_METRICS.has(metric) || !VALID_INTERVALS.has(interval) || !VALID_RANGES.has(range) || !VALID_NETWORKS.has(network)) {
+    if (
+      !metric ||
+      !VALID_METRICS.has(metric) ||
+      !VALID_INTERVALS.has(interval) ||
+      !VALID_RANGES.has(range) ||
+      !VALID_NETWORKS.has(network) ||
+      (hasCustomWindow && (!start || !end || start.getTime() > end.getTime()))
+    ) {
       return reply.code(400).send({ success: false, error: "Invalid history query" });
     }
 
@@ -253,6 +276,8 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       network,
       region: query.region,
       fueltech: query.fueltech,
+      start: start?.toISOString(),
+      end: end?.toISOString(),
     });
 
     return sendSuccess(
@@ -261,6 +286,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         metric,
         interval,
         range,
+        ...(start && end ? { start: start.toISOString(), end: end.toISOString() } : {}),
         series,
       },
       {
