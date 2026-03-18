@@ -149,12 +149,14 @@ describe("rest routes", () => {
 
     const res = await app.inject({ method: "GET", url: "/v1/health" });
     const body = res.json();
+    const health = body.events[0].attribute;
 
     expect(res.statusCode).toBe(200);
-    expect(body.success).toBe(true);
-    expect(body.data.status).toBe("ok");
-    expect(body.data.buffer_size).toBe(2);
-    expect(body.data.last_poll_at).toBe("2026-03-17T09:00:00.000Z");
+    expect(body.dataset_type).toBe("health_status");
+    expect(body.events[0].event_type).toBe("health_check");
+    expect(health.status).toBe("ok");
+    expect(health.buffer_size).toBe(2);
+    expect(health.last_poll_at).toBe("2026-03-17T09:00:00.000Z");
     expect(mocks.enforceAuthMock).not.toHaveBeenCalled();
 
     await app.close();
@@ -192,11 +194,10 @@ describe("rest routes", () => {
     const missing2 = await app.inject({ method: "GET", url: "/v1/live?network=WEM" });
     expect(missing2.statusCode).toBe(404);
 
-
     seedSnapshots();
     const ok = await app.inject({ method: "GET", url: "/v1/live?network=NEM" });
     expect(ok.statusCode).toBe(200);
-    expect(ok.json().data.network).toBe("NEM");
+    expect(ok.json().events[0].attribute.network).toBe("NEM");
 
     await app.close();
   });
@@ -209,9 +210,9 @@ describe("rest routes", () => {
     const body = res.json();
 
     expect(res.statusCode).toBe(200);
-    expect(body.success).toBe(true);
-    expect(body.data.NEM).toBeDefined();
-    expect(body.data.WEM).toBeDefined();
+    expect(body.dataset_type).toBe("live_snapshot_collection");
+    expect(body.events[0].attribute.NEM).toBeDefined();
+    expect(body.events[0].attribute.WEM).toBeDefined();
 
     await app.close();
   });
@@ -234,8 +235,8 @@ describe("rest routes", () => {
     const ok = await app.inject({ method: "GET", url: "/v1/live/region/NSW1" });
     const body = ok.json();
     expect(ok.statusCode).toBe(200);
-    expect(body.data.region).toBe("NSW1");
-    expect(body.data.network).toBe("NEM");
+    expect(body.events[0].attribute.region).toBe("NSW1");
+    expect(body.events[0].attribute.network).toBe("NEM");
 
     await app.close();
   });
@@ -251,8 +252,8 @@ describe("rest routes", () => {
     const body = ok.json();
 
     expect(ok.statusCode).toBe(200);
-    expect(Array.isArray(body.data)).toBe(true);
-    expect(body.data.some((x: any) => x.region === "NSW1")).toBe(true);
+    expect(Array.isArray(body.events[0].attribute)).toBe(true);
+    expect(body.events[0].attribute.some((x: any) => x.region === "NSW1")).toBe(true);
 
     await app.close();
   });
@@ -300,8 +301,8 @@ describe("rest routes", () => {
     const body = ok.json();
 
     expect(ok.statusCode).toBe(200);
-    expect(body.success).toBe(true);
-    expect(body.data.metric).toBe("price");
+    expect(body.dataset_type).toBe("historical_series");
+    expect(body.events[0].attribute.metric).toBe("price");
     expect(mocks.queryHistoryMock).toHaveBeenCalledWith({
       metric: "price",
       interval: "1h",
