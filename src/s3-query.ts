@@ -1,5 +1,12 @@
 import { getBufferSince, recentBuffer } from "./cache";
-import { getDailyRollupKeysForDays, getHourlyRollupKeysForRange, getJsonMany, getNdjsonMany, getRawKeysForRange } from "./s3";
+import {
+  getDailyRollupKeysForDays,
+  getDailyRollupKeysForRange,
+  getHourlyRollupKeysForRange,
+  getJsonMany,
+  getNdjsonMany,
+  getRawKeysForRange,
+} from "./s3";
 import type { EnergySnapshot, HistoryPoint, HistoryQueryParams, RangeStatPoint, RangeStats, RegionSnapshot, RollupRow } from "./types";
 
 function getRangeStart(range: HistoryQueryParams["range"]): Date {
@@ -168,6 +175,34 @@ function dedupeHistoryPoints(points: HistoryPoint[]): HistoryPoint[] {
   );
 }
 
+function hasExplicitWindow(params: Pick<HistoryQueryParams, "start" | "end">): boolean {
+  return typeof params.start === "string" || typeof params.end === "string";
+}
+
+function getQueryWindow(params: Pick<HistoryQueryParams, "range" | "start" | "end">): { from: Date; to: Date } {
+  if (params.start && params.end) {
+    return {
+      from: new Date(params.start),
+      to: new Date(params.end),
+    };
+  }
+
+  return {
+    from: getRangeStart(params.range),
+    to: new Date(),
+  };
+}
+
+function filterHistoryPointsByWindow(points: HistoryPoint[], from: Date, to: Date): HistoryPoint[] {
+  const fromTime = from.getTime();
+  const toTime = to.getTime();
+
+  return points.filter((point) => {
+    const timestamp = new Date(point.timestamp).getTime();
+    return timestamp >= fromTime && timestamp <= toTime;
+  });
+}
+
 function selectStat(rows: RollupRow[], metricValue: (row: RollupRow) => number | null, direction: "min" | "max"): RangeStatPoint {
   const candidates = rows
     .map((row) => ({ row, value: metricValue(row) }))
@@ -195,6 +230,10 @@ export async function queryHistory(params: HistoryQueryParams): Promise<HistoryP
     return readRawHistory(params);
   }
 
+  if (hasExplicitWindow(params)) {
+    return params.interval === "1h" ? readHourlyRollups(params) : readDailyRollups(params);
+  }
+
   if (params.range === "24h") {
     return readFromBuffer(params);
   }
@@ -207,8 +246,8 @@ export async function queryHistory(params: HistoryQueryParams): Promise<HistoryP
 }
 
 export async function readRawHistory(params: HistoryQueryParams): Promise<HistoryPoint[]> {
-  const from = getRangeStart(params.range);
-  const keys = getRawKeysForRange(params.network, from, new Date());
+  const { from, to } = getQueryWindow(params);
+  const keys = getRawKeysForRange(params.network, from, to);
   const snapshots = (await getJsonMany<EnergySnapshot>(keys)).filter(
     (snapshot): snapshot is EnergySnapshot => snapshot !== null,
   );
@@ -220,7 +259,7 @@ export async function readRawHistory(params: HistoryQueryParams): Promise<Histor
     }))
     .sort((left, right) => new Date(left.timestamp).getTime() - new Date(right.timestamp).getTime());
 
-  return dedupeHistoryPoints(points);
+  return filterHistoryPointsByWindow(dedupeHistoryPoints(points), from, to);
 }
 
 export function readFromBuffer(params: HistoryQueryParams): HistoryPoint[] {
@@ -242,18 +281,27 @@ export function readFromBuffer(params: HistoryQueryParams): HistoryPoint[] {
 }
 
 export async function readHourlyRollups(params: HistoryQueryParams): Promise<HistoryPoint[]> {
-  const from = getRangeStart(params.range === "24h" ? "7d" : params.range);
-  const keys = getHourlyRollupKeysForRange(params.network, from, new Date());
+  const { from, to } = hasExplicitWindow(params)
+    ? getQueryWindow(params)
+    : { from: getRangeStart(params.range === "24h" ? "7d" : params.range), to: new Date() };
+  const keys = getHourlyRollupKeysForRange(params.network, from, to);
   const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
 
-  return mapRollupRowsToHistoryPoints(rows, params.metric);
+  return filterHistoryPointsByWindow(mapRollupRowsToHistoryPoints(rows, params.metric), from, to);
 }
 
 export async function readDailyRollups(params: HistoryQueryParams): Promise<HistoryPoint[]> {
-  const numDays = params.range === "30d" ? 30 : 90;
-  const keys = getDailyRollupKeysForDays(params.network, numDays);
+  const keys = hasExplicitWindow(params)
+    ? getDailyRollupKeysForRange(params.network, new Date(params.start!), new Date(params.end!))
+    : getDailyRollupKeysForDays(params.network, params.range === "30d" ? 30 : 90);
   const rows = filterRollupRows(await getNdjsonMany<RollupRow>(keys), params);
-  return mapRollupRowsToHistoryPoints(rows, params.metric);
+  const points = mapRollupRowsToHistoryPoints(rows, params.metric);
+
+  if (!hasExplicitWindow(params)) {
+    return points;
+  }
+
+  return filterHistoryPointsByWindow(points, new Date(params.start!), new Date(params.end!));
 }
 
 export async function computeStats(
