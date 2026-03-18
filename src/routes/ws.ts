@@ -5,6 +5,7 @@ import { validateAuth } from "../auth";
 import { latestSnapshot } from "../cache";
 import { emitter } from "../poller";
 import { round } from "../normalise";
+import { buildDatasetEnvelope } from "../response-format";
 import type {
   EnergySnapshot,
   LiveSnapshots,
@@ -234,7 +235,11 @@ const wsRoutes: FastifyPluginAsync = async (fastify) => {
       socket.send(
         JSON.stringify({
           event: "energy_update",
-          data: latestSnapshot,
+          data: buildDatasetEnvelope(latestSnapshot, {
+            datasetType: "stream_snapshot",
+            eventType: "energy_update",
+            datasetTimestamp: new Date().toISOString(),
+          }),
         }),
       );
 
@@ -242,12 +247,19 @@ const wsRoutes: FastifyPluginAsync = async (fastify) => {
         socket.send(
           JSON.stringify({
             event: "energy_update",
-            data: applySubscriptions(
+            data: buildDatasetEnvelope(
+              applySubscriptions(
+                {
+                  NEM: snapshots.nem,
+                  WEM: snapshots.wem,
+                },
+                subscriptions,
+              ),
               {
-                NEM: snapshots.nem,
-                WEM: snapshots.wem,
+                datasetType: "stream_snapshot",
+                eventType: "energy_update",
+                datasetTimestamp: new Date().toISOString(),
               },
-              subscriptions,
             ),
           }),
         );

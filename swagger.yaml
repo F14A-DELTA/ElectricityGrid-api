@@ -1,0 +1,236 @@
+openapi: 3.0.0
+info:
+  title: ElectricityGrid API
+  description: >-
+    Real-time and historical electricity grid data for Australian networks (NEM
+    & WEM) - to authorise use local-dev-token as the BearerAuth value!
+  version: 1.0.0
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key
+  schemas:
+    NetworkCode:
+      type: string
+      enum:
+        - NEM
+        - WEM
+    RegionCode:
+      type: string
+      enum:
+        - NSW1
+        - QLD1
+        - VIC1
+        - SA1
+        - TAS1
+        - WEM
+    SnapshotSummary:
+      type: object
+      properties:
+        net_generation_mw:
+          type: number
+          nullable: true
+        renewables_mw:
+          type: number
+          nullable: true
+        renewables_pct:
+          type: number
+          nullable: true
+        demand_mw:
+          type: number
+          nullable: true
+    SnapshotEmissions:
+      type: object
+      properties:
+        volume_tco2e_per_30m:
+          type: number
+          nullable: true
+        intensity_kgco2e_per_mwh:
+          type: number
+          nullable: true
+    SnapshotGenerationItem:
+      type: object
+      properties:
+        fueltech:
+          type: string
+        label:
+          type: string
+        power_mw:
+          type: number
+          nullable: true
+        proportion_pct:
+          type: number
+          nullable: true
+        price_dollar_per_mwh:
+          type: number
+          nullable: true
+        total_energy_mwh:
+          type: number
+          nullable: true
+    SnapshotCurtailmentItem:
+      type: object
+      properties:
+        fueltech:
+          type: string
+        label:
+          type: string
+        power_mw:
+          type: number
+          nullable: true
+        proportion_pct:
+          type: number
+          nullable: true
+    RegionSnapshot:
+      type: object
+      properties:
+        price_dollar_per_mwh:
+          type: number
+          nullable: true
+        demand_mw:
+          type: number
+          nullable: true
+        summary:
+          $ref: '#/components/schemas/SnapshotSummary'
+        emissions:
+          $ref: '#/components/schemas/SnapshotEmissions'
+        generation:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotGenerationItem'
+        loads:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotGenerationItem'
+        curtailment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotCurtailmentItem'
+    EnergySnapshot:
+      type: object
+      properties:
+        updated_at:
+          type: string
+          format: date-time
+        network:
+          $ref: '#/components/schemas/NetworkCode'
+        summary:
+          $ref: '#/components/schemas/SnapshotSummary'
+        emissions:
+          $ref: '#/components/schemas/SnapshotEmissions'
+        generation:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotGenerationItem'
+        loads:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotGenerationItem'
+        curtailment:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnapshotCurtailmentItem'
+        regions:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/RegionSnapshot'
+    SuccessResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        updated_at:
+          type: string
+          format: date-time
+        data:
+          type: object
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: string
+paths:
+  /v1/health:
+    get:
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              schema:
+                description: Server is healthy
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  updated_at:
+                    type: string
+                    format: date-time
+                  data:
+                    type: object
+                    properties:
+                      uptime:
+                        type: number
+                      last_poll_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      buffer_size:
+                        type: integer
+                      status:
+                        type: string
+                        example: ok
+  /v1/live:
+    get:
+      responses:
+        '200':
+          description: Default Response
+  /v1/live/region/{region}:
+    get:
+      parameters:
+        - schema:
+            type: string
+          in: path
+          name: region
+          required: true
+      responses:
+        '200':
+          description: Default Response
+  /v1/live/price:
+    get:
+      responses:
+        '200':
+          description: Default Response
+  /v1/stats:
+    get:
+      responses:
+        '200':
+          description: Default Response
+  /v1/history:
+    get:
+      responses:
+        '200':
+          description: Default Response
+  /v1/events:
+    get:
+      responses:
+        '200':
+          description: Default Response
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/faic/ElectricityGrid-API/1.0.0
+  - url: http://localhost:3000
+    description: Local development
+  - url: http://ec2-54-226-204-58.compute-1.amazonaws.com:3000
+    description: Production
+security:
+  - BearerAuth: []

@@ -149,7 +149,9 @@ describe("ws route testing", () => {
 
     const firstMsg = JSON.parse(String(socket.send.mock.calls[0][0]));
     expect(firstMsg.event).toBe("energy_update");
-    expect(firstMsg.data).toEqual(mocks.latestSnapshotMock);
+    expect(firstMsg.data.dataset_type).toBe("stream_snapshot");
+    expect(firstMsg.data.events[0].event_type).toBe("energy_update");
+    expect(firstMsg.data.events[0].attribute).toEqual(mocks.latestSnapshotMock);
 
     socket.emitLocal("message", "{bad json");
     const errorMsg = JSON.parse(String(socket.send.mock.calls[1][0]));
@@ -175,14 +177,14 @@ describe("ws route testing", () => {
     updateHandler({ nem: mocks.latestSnapshotMock.NEM, wem: mocks.latestSnapshotMock.WEM });
 
     const subscribedPayload = getLastSentPayload(socket);
-    expect(subscribedPayload.data.NEM.regions.NSW1).toBeDefined();
-    expect(subscribedPayload.data.NEM.regions.QLD1).toBeUndefined();
+    expect(subscribedPayload.data.events[0].attribute.NEM.regions.NSW1).toBeDefined();
+    expect(subscribedPayload.data.events[0].attribute.NEM.regions.QLD1).toBeUndefined();
 
     socket.emitLocal("message", JSON.stringify({ action: "unsubscribe", regions: ["NSW1"], metrics: ["price"] }));
     updateHandler({ nem: mocks.latestSnapshotMock.NEM, wem: mocks.latestSnapshotMock.WEM });
 
     const unsubscribedPayload = getLastSentPayload(socket);
-    expect(unsubscribedPayload.data.NEM.regions.NSW1).toBeDefined();
+    expect(unsubscribedPayload.data.events[0].attribute.NEM.regions.NSW1).toBeDefined();
 
     socket.emitLocal("close");
     socket.emitLocal("error");

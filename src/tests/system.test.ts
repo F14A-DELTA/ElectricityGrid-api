@@ -121,12 +121,17 @@ describe("system tests", () => {
       const health = await app.inject({ method: "GET", url: "/v1/health" });
       expect(health.statusCode).toBe(200);
       expect(health.json()).toMatchObject({
-        success: true,
-        data: {
-          status: "ok",
-          buffer_size: 0,
-          last_poll_at: "",
-        },
+        dataset_type: "health_status",
+        events: [
+          {
+            event_type: "health_check",
+            attribute: {
+              status: "ok",
+              buffer_size: 0,
+              last_poll_at: null,
+            },
+          },
+        ],
       });
 
       const live = await app.inject({ method: "GET", url: "/v1/live" });
@@ -157,14 +162,20 @@ describe("system tests", () => {
       });
       expect(live.statusCode).toBe(200);
       expect(live.json()).toMatchObject({
-        success: true,
-        updated_at: "2026-03-17T10:00:00Z",
-        data: {
-          network: "NEM",
-          summary: {
-            net_generation_mw: 70,
-          },
+        dataset_type: "live_snapshot",
+        time_object: {
+          timestamp: "2026-03-17T10:00:00Z",
         },
+        events: [
+          {
+            attribute: {
+              network: "NEM",
+              summary: {
+                net_generation_mw: 70,
+              },
+            },
+          },
+        ],
       });
 
       const price = await app.inject({
@@ -173,7 +184,7 @@ describe("system tests", () => {
         headers: AUTH_HEADER,
       });
       expect(price.statusCode).toBe(200);
-      expect(price.json().data).toEqual(
+      expect(price.json().events[0].attribute).toEqual(
         expect.arrayContaining([
           {
             network: "NEM",
@@ -197,13 +208,16 @@ describe("system tests", () => {
       });
       expect(region.statusCode).toBe(200);
       expect(region.json()).toMatchObject({
-        success: true,
-        updated_at: "2026-03-17T10:00:00Z",
-        data: {
-          network: "NEM",
-          region: "NSW1",
-          price_dollar_per_mwh: 80,
-        },
+        dataset_type: "regional_live_snapshot",
+        events: [
+          {
+            attribute: {
+              network: "NEM",
+              region: "NSW1",
+              price_dollar_per_mwh: 80,
+            },
+          },
+        ],
       });
     } finally {
       await app.close();
@@ -244,16 +258,20 @@ describe("system tests", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
-        success: true,
-        data: {
-          metric: "price",
-          interval: "5m",
-          range: "24h",
-          series: [
-            { timestamp: "2026-03-17T09:55:00Z", value: 70 },
-            { timestamp: "2026-03-17T10:00:00Z", value: 75 },
-          ],
-        },
+        dataset_type: "historical_series",
+        events: [
+          {
+            attribute: {
+              metric: "price",
+              interval: "5m",
+              range: "24h",
+              series: [
+                { timestamp: "2026-03-17T09:55:00Z", value: 70 },
+                { timestamp: "2026-03-17T10:00:00Z", value: 75 },
+              ],
+            },
+          },
+        ],
       });
     } finally {
       await app.close();
@@ -307,7 +325,7 @@ describe("system tests", () => {
         headers: AUTH_HEADER,
       });
       expect(history.statusCode).toBe(200);
-      expect(history.json().data.series).toEqual([{ timestamp: "2026-03-16T09:00:00Z", value: 81 }]);
+      expect(history.json().events[0].attribute.series).toEqual([{ timestamp: "2026-03-16T09:00:00Z", value: 81 }]);
 
       const stats = await app.inject({
         method: "GET",
@@ -316,23 +334,26 @@ describe("system tests", () => {
       });
       expect(stats.statusCode).toBe(200);
       expect(stats.json()).toMatchObject({
-        success: true,
-        data: {
-          demand_mw: {
-            min: { value: 80, timestamp: "2026-03-10T00:00:00Z" },
-            max: { value: 90, timestamp: "2026-03-11T00:00:00Z" },
+        dataset_type: "range_statistics",
+        events: [
+          {
+            attribute: {
+              demand_mw: {
+                min: { value: 80, timestamp: "2026-03-10T00:00:00Z" },
+                max: { value: 90, timestamp: "2026-03-11T00:00:00Z" },
+              },
+              price: {
+                min: { value: 55, timestamp: "2026-03-11T00:00:00Z" },
+                max: { value: 60, timestamp: "2026-03-10T00:00:00Z" },
+              },
+            },
           },
-          price: {
-            min: { value: 55, timestamp: "2026-03-11T00:00:00Z" },
-            max: { value: 60, timestamp: "2026-03-10T00:00:00Z" },
-          },
-        },
+        ],
       });
     } finally {
       await app.close();
     }
   });
-
 
   it("rejects invalid history queries", async () => {
     const { app } = await buildSystemApp();
@@ -386,14 +407,20 @@ describe("system tests", () => {
 
       expect(response.statusCode).toBe(200);
       expect(response.json()).toMatchObject({
-        success: true,
-        updated_at: "2026-03-17T10:00:00Z",
-        data: {
-          metric: "price",
-          interval: "1h",
-          range: "7d",
-          series: [{ timestamp: "2026-03-16T09:00:00Z", value: 79 }],
+        dataset_type: "historical_series",
+        time_object: {
+          timestamp: "2026-03-17T10:00:00Z",
         },
+        events: [
+          {
+            attribute: {
+              metric: "price",
+              interval: "1h",
+              range: "7d",
+              series: [{ timestamp: "2026-03-16T09:00:00Z", value: 79 }],
+            },
+          },
+        ],
       });
       expect(s3Mocks.getHourlyRollupKeysForRangeMock).toHaveBeenCalledTimes(1);
     } finally {
@@ -446,7 +473,7 @@ describe("system tests", () => {
       });
 
       expect(loadsResponse.statusCode).toBe(200);
-      expect(loadsResponse.json().data.series).toEqual([
+      expect(loadsResponse.json().events[0].attribute.series).toEqual([
         { timestamp: "2026-03-17T09:55:00Z", value: 12 },
         { timestamp: "2026-03-17T10:00:00Z", value: null },
       ]);
@@ -458,7 +485,7 @@ describe("system tests", () => {
       });
 
       expect(curtailmentResponse.statusCode).toBe(200);
-      expect(curtailmentResponse.json().data.series).toEqual([
+      expect(curtailmentResponse.json().events[0].attribute.series).toEqual([
         { timestamp: "2026-03-17T09:55:00Z", value: null },
         { timestamp: "2026-03-17T10:00:00Z", value: 3 },
       ]);

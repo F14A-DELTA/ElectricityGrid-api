@@ -4,6 +4,7 @@ import type { FastifyPluginAsync } from "fastify";
 import { validateAuth } from "../auth";
 import { latestSnapshot } from "../cache";
 import { emitter } from "../poller";
+import { buildDatasetEnvelope } from "../response-format";
 
 const sseRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/v1/events", async (request, reply) => {
@@ -25,17 +26,49 @@ const sseRoutes: FastifyPluginAsync = async (fastify) => {
       reply.raw.write(`data: ${JSON.stringify(data)}\n\n`);
     };
 
-    sendEvent("connected", {
-      timestamp: new Date().toISOString(),
-      snapshot: latestSnapshot,
-    });
+    const connectedAt = new Date().toISOString();
+    sendEvent(
+      "connected",
+      buildDatasetEnvelope(
+        {
+          snapshot: latestSnapshot,
+        },
+        {
+          datasetType: "stream_snapshot",
+          eventType: "stream_connected",
+          datasetTimestamp: connectedAt,
+        },
+      ),
+    );
 
     const handler = (snapshots: unknown) => {
-      sendEvent("energy_update", snapshots);
+      sendEvent(
+        "energy_update",
+        buildDatasetEnvelope(snapshots, {
+          datasetType: "stream_snapshot",
+          eventType: "energy_update",
+          datasetTimestamp: new Date().toISOString(),
+        }),
+      );
     };
 
     const heartbeat = setInterval(() => {
-      sendEvent("heartbeat", { timestamp: new Date().toISOString() });
+      const heartbeatAt = new Date().toISOString();
+      sendEvent(
+        "heartbeat",
+        buildDatasetEnvelope(
+          {
+            status: "alive",
+          },
+          {
+            datasetType: "stream_heartbeat",
+            eventType: "heartbeat",
+            datasetTimestamp: heartbeatAt,
+            duration: 30,
+            durationUnit: "second",
+          },
+        ),
+      );
     }, 30000);
 
     emitter.on("update", handler);
