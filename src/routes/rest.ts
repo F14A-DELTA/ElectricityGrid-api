@@ -6,6 +6,16 @@ import { latestSnapshot, recentBuffer } from "../cache";
 import { lastPollAt } from "../poller";
 import { computeStats, queryHistory } from "../s3-query";
 import type { HistoryQueryParams, NetworkCode } from "../types";
+import { errorResponse, successResponse } from "../swagger";
+import {
+  snapshotSummarySchema,
+  snapshotEmissionsSchema,
+  snapshotGenerationItemSchema,
+  snapshotCurtailmentItemSchema,
+  energySnapshotSchema,
+  rangeStatSchema,
+  historyPointSchema,
+} from "../swagger";
 
 const VALID_NETWORKS = new Set<NetworkCode>(["NEM", "WEM"]);
 const VALID_REGIONS = new Set(["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"]);
@@ -19,104 +29,6 @@ const VALID_METRICS = new Set<HistoryQueryParams["metric"]>([
   "demand_mw",
   "renewables_pct",
 ]);
-
-const summarySchema = {
-  type: "object",
-  properties: {
-    net_generation_mw: { type: "number", nullable: true },
-    renewables_mw:     { type: "number", nullable: true },
-    renewables_pct:    { type: "number", nullable: true },
-    demand_mw:         { type: "number", nullable: true },
-  },
-};
- 
-const emissionsSchema = {
-  type: "object",
-  properties: {
-    volume_tco2e_per_30m:     { type: "number", nullable: true },
-    intensity_kgco2e_per_mwh: { type: "number", nullable: true },
-  },
-};
- 
-const generationItemSchema = {
-  type: "object",
-  properties: {
-    fueltech:             { type: "string" },
-    label:                { type: "string" },
-    power_mw:             { type: "number", nullable: true },
-    proportion_pct:       { type: "number", nullable: true },
-    price_dollar_per_mwh: { type: "number", nullable: true },
-    total_energy_mwh:     { type: "number", nullable: true },
-  },
-};
- 
-const curtailmentItemSchema = {
-  type: "object",
-  properties: {
-    fueltech:       { type: "string" },
-    label:          { type: "string" },
-    power_mw:       { type: "number", nullable: true },
-    proportion_pct: { type: "number", nullable: true },
-  },
-};
- 
-const regionSnapshotSchema = {
-  type: "object",
-  properties: {
-    price_dollar_per_mwh: { type: "number", nullable: true },
-    demand_mw:            { type: "number", nullable: true },
-    summary:              summarySchema,
-    emissions:            emissionsSchema,
-    generation:           { type: "array", items: generationItemSchema },
-    loads:                { type: "array", items: generationItemSchema },
-    curtailment:          { type: "array", items: curtailmentItemSchema },
-  },
-};
- 
-const energySnapshotSchema = {
-  type: "object",
-  properties: {
-    updated_at:  { type: "string", format: "date-time" },
-    network:     { type: "string", enum: ["NEM", "WEM"] },
-    summary:     summarySchema,
-    emissions:   emissionsSchema,
-    generation:  { type: "array", items: generationItemSchema },
-    loads:       { type: "array", items: generationItemSchema },
-    curtailment: { type: "array", items: curtailmentItemSchema },
-    regions: {
-      type: "object",
-      additionalProperties: regionSnapshotSchema,
-    },
-  },
-};
- 
-const errorSchema = {
-  type: "object",
-  properties: {
-    success: { type: "boolean", example: false },
-    error:   { type: "string" },
-  },
-};
- 
-const rangeStatSchema = {
-  type: "object",
-  properties: {
-    min: {
-      type: "object",
-      properties: {
-        value:     { type: "number", nullable: true },
-        timestamp: { type: "string", nullable: true },
-      },
-    },
-    max: {
-      type: "object",
-      properties: {
-        value:     { type: "number", nullable: true },
-        timestamp: { type: "string", nullable: true },
-      },
-    },
-  },
-};
 
 function updatedAtForResponse(network?: NetworkCode): string {
   if (network && latestSnapshot?.[network]) {
@@ -153,23 +65,15 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       tags: ["System"],
       security: [],
       response: {
-        200: {
-          description: "Server is healthy",
+        200: successResponse("Server is healthy", {
           type: "object",
           properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
-              type: "object",
-              properties: {
-                uptime:       { type: "number" },
-                last_poll_at: { type: "string", format: "date-time" },
-                buffer_size:  { type: "integer" },
-                status:       { type: "string", example: "ok" },
-              },
-            },
+            uptime:       { type: "number" },
+            last_poll_at: { type: "string", format: "date-time" },
+            buffer_size:  { type: "integer" },
+            status:       { type: "string", example: "ok" },
           },
-        },
+        }),
       },
     },
   }, async (_request, reply) => {
@@ -201,22 +105,14 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: {
-          description: "Live snapshot data",
+        200: successResponse("Live snapshot data", {
           type: "object",
-          properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
-              type: "object",
-              description: "Map of network code to EnergySnapshot",
-              additionalProperties: energySnapshotSchema,
-            },
-          },
-        },
-        400: { description: "Invalid network code",   ...errorSchema },
-        404: { description: "Snapshot not available", ...errorSchema },
-        503: { description: "Cache not yet warm",     ...errorSchema },
+          description: "Map of network code to EnergySnapshot",
+          additionalProperties: energySnapshotSchema,
+        }),
+        400: errorResponse("Invalid network code"),
+        404: errorResponse("Snapshot not available"),
+        503: errorResponse("Cache not yet warm"),
       },
     },
   }, async (request, reply) => {
@@ -273,17 +169,17 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
                 updated_at:           { type: "string", format: "date-time" },
                 price_dollar_per_mwh: { type: "number", nullable: true },
                 demand_mw:            { type: "number", nullable: true },
-                summary:              summarySchema,
-                emissions:            emissionsSchema,
-                generation:           { type: "array", items: generationItemSchema },
-                loads:                { type: "array", items: generationItemSchema },
-                curtailment:          { type: "array", items: curtailmentItemSchema },
+                summary:              snapshotSummarySchema,
+                emissions:            snapshotEmissionsSchema,
+                generation:           { type: "array", items: snapshotGenerationItemSchema },
+                loads:                { type: "array", items: snapshotGenerationItemSchema },
+                curtailment:          { type: "array", items: snapshotCurtailmentItemSchema },
               },
             },
           },
         },
-        404: { description: "Unknown or unavailable region", ...errorSchema },
-        503: { description: "Cache not yet warm",            ...errorSchema },
+        404: errorResponse("Unknown or unavailable region"),
+        503: errorResponse("Cache not yet warm"),
       },
     },
   }, async (request, reply) => {
@@ -343,7 +239,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
             },
           },
         },
-        503: { description: "Cache not yet warm", ...errorSchema },
+        503: errorResponse("Cache not yet warm"),
       },
     },
   }, async (_request, reply) => {
@@ -391,23 +287,15 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: {
-          description: "Network statistics",
+        200: successResponse("Network statistics", {
           type: "object",
           properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
-              type: "object",
-              properties: {
-                demand_mw:      rangeStatSchema,
-                renewables_pct: rangeStatSchema,
-                price:          rangeStatSchema,
-              },
-            },
+            demand_mw:      rangeStatSchema,
+            renewables_pct: rangeStatSchema,
+            price:          rangeStatSchema,
           },
-        },
-        400: { description: "Invalid query params", ...errorSchema },
+        }),
+        400: errorResponse("Invalid query params"),
       },
     },
   }, async (request, reply) => {
@@ -493,7 +381,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
             },
           },
         },
-        400: { description: "Invalid query params — metric is required", ...errorSchema },
+        400: errorResponse("Invalid query params — metric is required"),
       },
     },
   }, async (request, reply) => {
