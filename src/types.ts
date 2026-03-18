@@ -88,6 +88,8 @@ export interface HistoryQueryParams {
   metric: "generation_mw" | "price" | "emissions_volume" | "emission_intensity" | "demand_mw" | "renewables_pct";
   range: "24h" | "7d" | "30d" | "90d";
   interval: "5m" | "1h" | "1d";
+  start?: string;
+  end?: string;
 }
 
 export interface RangeStatPoint {
