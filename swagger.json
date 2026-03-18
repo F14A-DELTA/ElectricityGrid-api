@@ -124,28 +124,440 @@
             "nullable": true
           },
           "summary": {
-            "$ref": "#/components/schemas/SnapshotSummary"
+            "type": "object",
+            "properties": {
+              "net_generation_mw": {
+                "type": "number",
+                "nullable": true
+              },
+              "renewables_mw": {
+                "type": "number",
+                "nullable": true
+              },
+              "renewables_pct": {
+                "type": "number",
+                "nullable": true
+              },
+              "demand_mw": {
+                "type": "number",
+                "nullable": true
+              }
+            }
           },
           "emissions": {
-            "$ref": "#/components/schemas/SnapshotEmissions"
+            "type": "object",
+            "properties": {
+              "volume_tco2e_per_30m": {
+                "type": "number",
+                "nullable": true
+              },
+              "intensity_kgco2e_per_mwh": {
+                "type": "number",
+                "nullable": true
+              }
+            }
           },
           "generation": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SnapshotGenerationItem"
+              "type": "object",
+              "properties": {
+                "fueltech": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "power_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "proportion_pct": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "price_dollar_per_mwh": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "total_energy_mwh": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
             }
           },
           "loads": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SnapshotGenerationItem"
+              "type": "object",
+              "properties": {
+                "fueltech": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "power_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "proportion_pct": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "price_dollar_per_mwh": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "total_energy_mwh": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
             }
           },
           "curtailment": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/SnapshotCurtailmentItem"
+              "type": "object",
+              "properties": {
+                "fueltech": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "power_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "proportion_pct": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
             }
+          }
+        }
+      },
+      "EnergySnapshot": {
+        "type": "object",
+        "properties": {
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "network": {
+            "type": "string",
+            "enum": [
+              "NEM",
+              "WEM"
+            ]
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "net_generation_mw": {
+                "type": "number",
+                "nullable": true
+              },
+              "renewables_mw": {
+                "type": "number",
+                "nullable": true
+              },
+              "renewables_pct": {
+                "type": "number",
+                "nullable": true
+              },
+              "demand_mw": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          },
+          "emissions": {
+            "type": "object",
+            "properties": {
+              "volume_tco2e_per_30m": {
+                "type": "number",
+                "nullable": true
+              },
+              "intensity_kgco2e_per_mwh": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          },
+          "generation": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fueltech": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "power_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "proportion_pct": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "price_dollar_per_mwh": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "total_energy_mwh": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "loads": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fueltech": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "power_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "proportion_pct": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "price_dollar_per_mwh": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "total_energy_mwh": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "curtailment": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "fueltech": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "power_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "proportion_pct": {
+                  "type": "number",
+                  "nullable": true
+                }
+              }
+            }
+          },
+          "regions": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "properties": {
+                "price_dollar_per_mwh": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "demand_mw": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "summary": {
+                  "type": "object",
+                  "properties": {
+                    "net_generation_mw": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "renewables_mw": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "renewables_pct": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "demand_mw": {
+                      "type": "number",
+                      "nullable": true
+                    }
+                  }
+                },
+                "emissions": {
+                  "type": "object",
+                  "properties": {
+                    "volume_tco2e_per_30m": {
+                      "type": "number",
+                      "nullable": true
+                    },
+                    "intensity_kgco2e_per_mwh": {
+                      "type": "number",
+                      "nullable": true
+                    }
+                  }
+                },
+                "generation": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fueltech": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "power_mw": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "proportion_pct": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "price_dollar_per_mwh": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "total_energy_mwh": {
+                        "type": "number",
+                        "nullable": true
+                      }
+                    }
+                  }
+                },
+                "loads": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fueltech": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "power_mw": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "proportion_pct": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "price_dollar_per_mwh": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "total_energy_mwh": {
+                        "type": "number",
+                        "nullable": true
+                      }
+                    }
+                  }
+                },
+                "curtailment": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "fueltech": {
+                        "type": "string"
+                      },
+                      "label": {
+                        "type": "string"
+                      },
+                      "power_mw": {
+                        "type": "number",
+                        "nullable": true
+                      },
+                      "proportion_pct": {
+                        "type": "number",
+                        "nullable": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "RangeStat": {
+        "type": "object",
+        "properties": {
+          "min": {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "value": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          },
+          "max": {
+            "type": "object",
+            "properties": {
+              "timestamp": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "value": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "HistoryPoint": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "value": {
+            "type": "number",
+            "nullable": true
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": false
+          },
+          "error": {
+            "type": "string"
           }
         }
       }
@@ -973,12 +1385,12 @@
                             "min": {
                               "type": "object",
                               "properties": {
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
                                 "timestamp": {
                                   "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number",
                                   "nullable": true
                                 }
                               }
@@ -986,12 +1398,12 @@
                             "max": {
                               "type": "object",
                               "properties": {
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
                                 "timestamp": {
                                   "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number",
                                   "nullable": true
                                 }
                               }
@@ -1004,12 +1416,12 @@
                             "min": {
                               "type": "object",
                               "properties": {
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
                                 "timestamp": {
                                   "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number",
                                   "nullable": true
                                 }
                               }
@@ -1017,12 +1429,12 @@
                             "max": {
                               "type": "object",
                               "properties": {
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
                                 "timestamp": {
                                   "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number",
                                   "nullable": true
                                 }
                               }
@@ -1035,12 +1447,12 @@
                             "min": {
                               "type": "object",
                               "properties": {
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
                                 "timestamp": {
                                   "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number",
                                   "nullable": true
                                 }
                               }
@@ -1048,12 +1460,12 @@
                             "max": {
                               "type": "object",
                               "properties": {
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
                                 "timestamp": {
                                   "type": "string",
+                                  "format": "date-time"
+                                },
+                                "value": {
+                                  "type": "number",
                                   "nullable": true
                                 }
                               }

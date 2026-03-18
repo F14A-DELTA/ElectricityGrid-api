@@ -6,8 +6,9 @@ import { latestSnapshot, recentBuffer } from "../cache";
 import { lastPollAt } from "../poller";
 import { computeStats, queryHistory } from "../s3-query";
 import type { HistoryQueryParams, NetworkCode } from "../types";
-import { errorResponse, successResponse } from "../swagger";
 import {
+  errorResponse,
+  successResponse,
   snapshotSummarySchema,
   snapshotEmissionsSchema,
   snapshotGenerationItemSchema,
@@ -155,29 +156,21 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: {
-          description: "Region snapshot data",
+        200: successResponse("Region snapshot data", {
           type: "object",
           properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
-              type: "object",
-              properties: {
-                region:               { type: "string", example: "NSW1" },
-                network:              { type: "string", enum: ["NEM", "WEM"] },
-                updated_at:           { type: "string", format: "date-time" },
-                price_dollar_per_mwh: { type: "number", nullable: true },
-                demand_mw:            { type: "number", nullable: true },
-                summary:              snapshotSummarySchema,
-                emissions:            snapshotEmissionsSchema,
-                generation:           { type: "array", items: snapshotGenerationItemSchema },
-                loads:                { type: "array", items: snapshotGenerationItemSchema },
-                curtailment:          { type: "array", items: snapshotCurtailmentItemSchema },
-              },
-            },
+            region:               { type: "string", example: "NSW1" },
+            network:              { type: "string", enum: ["NEM", "WEM"] },
+            updated_at:           { type: "string", format: "date-time" },
+            price_dollar_per_mwh: { type: "number", nullable: true },
+            demand_mw:            { type: "number", nullable: true },
+            summary:              snapshotSummarySchema,
+            emissions:            snapshotEmissionsSchema,
+            generation:           { type: "array", items: snapshotGenerationItemSchema },
+            loads:                { type: "array", items: snapshotGenerationItemSchema },
+            curtailment:          { type: "array", items: snapshotCurtailmentItemSchema },
           },
-        },
+        }),
         404: errorResponse("Unknown or unavailable region"),
         503: errorResponse("Cache not yet warm"),
       },
@@ -219,26 +212,18 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       description: "Returns the current spot price ($/MWh) and demand (MW) for every available region across all networks.",
       tags: ["Live Data"],
       response: {
-        200: {
-          description: "Price and demand for all regions",
-          type: "object",
-          properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  network:              { type: "string", enum: ["NEM", "WEM"] },
-                  region:               { type: "string", example: "NSW1" },
-                  price_dollar_per_mwh: { type: "number", nullable: true },
-                  demand_mw:            { type: "number", nullable: true },
-                },
-              },
+        200: successResponse("Price and demand for all regions", {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              network:              { type: "string", enum: ["NEM", "WEM"] },
+              region:               { type: "string", example: "NSW1" },
+              price_dollar_per_mwh: { type: "number", nullable: true },
+              demand_mw:            { type: "number", nullable: true },
             },
           },
-        },
+        }),
         503: errorResponse("Cache not yet warm"),
       },
     },
@@ -355,32 +340,15 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: {
-          description: "Time series data",
+        200: successResponse("Time series data", {
           type: "object",
           properties: {
-            success:    { type: "boolean", example: true },
-            updated_at: { type: "string", format: "date-time" },
-            data: {
-              type: "object",
-              properties: {
-                metric:   { type: "string", example: "price" },
-                interval: { type: "string", example: "1h" },
-                range:    { type: "string", example: "7d" },
-                series: {
-                  type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      timestamp: { type: "string", format: "date-time" },
-                      value:     { type: "number", nullable: true },
-                    },
-                  },
-                },
-              },
-            },
+            metric:   { type: "string", example: "price" },
+            interval: { type: "string", example: "1h" },
+            range:    { type: "string", example: "7d" },
+            series:   { type: "array", items: historyPointSchema },
           },
-        },
+        }),
         400: errorResponse("Invalid query params — metric is required"),
       },
     },
