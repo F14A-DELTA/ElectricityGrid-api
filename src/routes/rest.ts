@@ -140,9 +140,10 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
           {
             type: "object",
             description: "Map of network code to EnergySnapshot, or a single EnergySnapshot if network param is provided",
-            additionalProperties: energySnapshotSchema,
+            additionalProperties: true,
           },
         ),
+        401: errorResponse("Missing or invalid API key"),
         400: errorResponse("Invalid network code"),
         404: errorResponse("Snapshot not available"),
         503: errorResponse("Cache not yet warm"),
@@ -190,8 +191,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       properties: {
         region: {
           type: "string",
-          enum: ["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"],
-          description: "Region code",
+          description: "Region code. Values: NSW1, QLD1, VIC1, SA1, TAS1, WEM",
         },
       },
     },
@@ -216,6 +216,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
           },
         },
       ),
+      401: errorResponse("Missing or invalid API key"),
       404: errorResponse("Unknown or unavailable region"),
       503: errorResponse("Cache not yet warm"),
     },
@@ -278,6 +279,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
             },
           },
         ),
+        401: errorResponse("Missing or invalid API key"),
         503: errorResponse("Cache not yet warm"),
       },
     },
@@ -344,6 +346,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
           },
         ),
         400: errorResponse("Invalid query params"),
+        401: errorResponse("Missing or invalid API key"),
       },
     },
   }, async (request, reply) => {
@@ -370,35 +373,29 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       tags: ["Historical Data"],
       querystring: {
         type: "object",
-        required: ["metric"],
         properties: {
           metric: {
             type: "string",
-            enum: ["generation_mw", "price", "emissions_volume", "emission_intensity", "demand_mw", "renewables_pct"],
-            description: "The metric to retrieve time series data for",
+            description: "The metric to retrieve (required). Values: generation_mw, price, emissions_volume, emission_intensity, demand_mw, renewables_pct",
           },
           interval: {
             type: "string",
-            enum: ["5m", "1h", "1d"],
             default: "1h",
-            description: "Aggregation interval",
+            description: "Aggregation interval. Values: 5m, 1h, 1d",
           },
           range: {
             type: "string",
-            enum: ["24h", "7d", "30d", "90d"],
             default: "7d",
-            description: "Time window to query",
+            description: "Time window to query. Values: 24h, 7d, 30d, 90d",
           },
           network: {
             type: "string",
-            enum: ["NEM", "WEM"],
             default: "NEM",
-            description: "Network to query",
+            description: "Network to query. Values: NEM, WEM",
           },
           region: {
             type: "string",
-            enum: ["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"],
-            description: "Optional — filter to a specific region",
+            description: "Optional — filter to a specific region. Values: NSW1, QLD1, VIC1, SA1, TAS1, WEM",
           },
           fueltech: {
             type: "string",
@@ -422,6 +419,7 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
           },
         ),
         400: errorResponse("Invalid query params — metric is required"),
+        401: errorResponse("Missing or invalid API key"),
       },
     },
   }, async (request, reply) => {

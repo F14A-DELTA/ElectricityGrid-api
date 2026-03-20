@@ -841,270 +841,7 @@
                           "attribute": {
                             "type": "object",
                             "description": "Map of network code to EnergySnapshot, or a single EnergySnapshot if network param is provided",
-                            "additionalProperties": {
-                              "type": "object",
-                              "properties": {
-                                "updated_at": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "network": {
-                                  "type": "string",
-                                  "enum": [
-                                    "NEM",
-                                    "WEM"
-                                  ]
-                                },
-                                "summary": {
-                                  "type": "object",
-                                  "properties": {
-                                    "net_generation_mw": {
-                                      "type": "number",
-                                      "nullable": true
-                                    },
-                                    "renewables_mw": {
-                                      "type": "number",
-                                      "nullable": true
-                                    },
-                                    "renewables_pct": {
-                                      "type": "number",
-                                      "nullable": true
-                                    },
-                                    "demand_mw": {
-                                      "type": "number",
-                                      "nullable": true
-                                    }
-                                  }
-                                },
-                                "emissions": {
-                                  "type": "object",
-                                  "properties": {
-                                    "volume_tco2e_per_30m": {
-                                      "type": "number",
-                                      "nullable": true
-                                    },
-                                    "intensity_kgco2e_per_mwh": {
-                                      "type": "number",
-                                      "nullable": true
-                                    }
-                                  }
-                                },
-                                "generation": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "fueltech": {
-                                        "type": "string"
-                                      },
-                                      "label": {
-                                        "type": "string"
-                                      },
-                                      "power_mw": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "proportion_pct": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "price_dollar_per_mwh": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "total_energy_mwh": {
-                                        "type": "number",
-                                        "nullable": true
-                                      }
-                                    }
-                                  }
-                                },
-                                "loads": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "fueltech": {
-                                        "type": "string"
-                                      },
-                                      "label": {
-                                        "type": "string"
-                                      },
-                                      "power_mw": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "proportion_pct": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "price_dollar_per_mwh": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "total_energy_mwh": {
-                                        "type": "number",
-                                        "nullable": true
-                                      }
-                                    }
-                                  }
-                                },
-                                "curtailment": {
-                                  "type": "array",
-                                  "items": {
-                                    "type": "object",
-                                    "properties": {
-                                      "fueltech": {
-                                        "type": "string"
-                                      },
-                                      "label": {
-                                        "type": "string"
-                                      },
-                                      "power_mw": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "proportion_pct": {
-                                        "type": "number",
-                                        "nullable": true
-                                      }
-                                    }
-                                  }
-                                },
-                                "regions": {
-                                  "type": "object",
-                                  "additionalProperties": {
-                                    "type": "object",
-                                    "properties": {
-                                      "price_dollar_per_mwh": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "demand_mw": {
-                                        "type": "number",
-                                        "nullable": true
-                                      },
-                                      "summary": {
-                                        "type": "object",
-                                        "properties": {
-                                          "net_generation_mw": {
-                                            "type": "number",
-                                            "nullable": true
-                                          },
-                                          "renewables_mw": {
-                                            "type": "number",
-                                            "nullable": true
-                                          },
-                                          "renewables_pct": {
-                                            "type": "number",
-                                            "nullable": true
-                                          },
-                                          "demand_mw": {
-                                            "type": "number",
-                                            "nullable": true
-                                          }
-                                        }
-                                      },
-                                      "emissions": {
-                                        "type": "object",
-                                        "properties": {
-                                          "volume_tco2e_per_30m": {
-                                            "type": "number",
-                                            "nullable": true
-                                          },
-                                          "intensity_kgco2e_per_mwh": {
-                                            "type": "number",
-                                            "nullable": true
-                                          }
-                                        }
-                                      },
-                                      "generation": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "properties": {
-                                            "fueltech": {
-                                              "type": "string"
-                                            },
-                                            "label": {
-                                              "type": "string"
-                                            },
-                                            "power_mw": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "proportion_pct": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "price_dollar_per_mwh": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "total_energy_mwh": {
-                                              "type": "number",
-                                              "nullable": true
-                                            }
-                                          }
-                                        }
-                                      },
-                                      "loads": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "properties": {
-                                            "fueltech": {
-                                              "type": "string"
-                                            },
-                                            "label": {
-                                              "type": "string"
-                                            },
-                                            "power_mw": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "proportion_pct": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "price_dollar_per_mwh": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "total_energy_mwh": {
-                                              "type": "number",
-                                              "nullable": true
-                                            }
-                                          }
-                                        }
-                                      },
-                                      "curtailment": {
-                                        "type": "array",
-                                        "items": {
-                                          "type": "object",
-                                          "properties": {
-                                            "fueltech": {
-                                              "type": "string"
-                                            },
-                                            "label": {
-                                              "type": "string"
-                                            },
-                                            "power_mw": {
-                                              "type": "number",
-                                              "nullable": true
-                                            },
-                                            "proportion_pct": {
-                                              "type": "number",
-                                              "nullable": true
-                                            }
-                                          }
-                                        }
-                                      }
-                                    }
-                                  }
-                                }
-                              }
-                            }
+                            "additionalProperties": true
                           }
                         }
                       }
@@ -1120,6 +857,26 @@
               "application/json": {
                 "schema": {
                   "description": "Invalid network code",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing or invalid API key",
                   "type": "object",
                   "properties": {
                     "success": {
@@ -1187,20 +944,12 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "enum": [
-                "NSW1",
-                "QLD1",
-                "VIC1",
-                "SA1",
-                "TAS1",
-                "WEM"
-              ]
+              "type": "string"
             },
             "in": "path",
             "name": "region",
             "required": true,
-            "description": "Region code"
+            "description": "Region code. Values: NSW1, QLD1, VIC1, SA1, TAS1, WEM"
           }
         ],
         "responses": {
@@ -1431,6 +1180,26 @@
               }
             }
           },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing or invalid API key",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "Unknown or unavailable region",
             "content": {
@@ -1586,6 +1355,26 @@
                           }
                         }
                       }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing or invalid API key",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
                     }
                   }
                 }
@@ -1871,6 +1660,26 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing or invalid API key",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -1885,82 +1694,51 @@
         "parameters": [
           {
             "schema": {
-              "type": "string",
-              "enum": [
-                "generation_mw",
-                "price",
-                "emissions_volume",
-                "emission_intensity",
-                "demand_mw",
-                "renewables_pct"
-              ]
+              "type": "string"
             },
             "in": "query",
             "name": "metric",
-            "required": true,
-            "description": "The metric to retrieve time series data for"
+            "required": false,
+            "description": "The metric to retrieve (required). Values: generation_mw, price, emissions_volume, emission_intensity, demand_mw, renewables_pct"
           },
           {
             "schema": {
               "type": "string",
-              "enum": [
-                "5m",
-                "1h",
-                "1d"
-              ],
               "default": "1h"
             },
             "in": "query",
             "name": "interval",
             "required": false,
-            "description": "Aggregation interval"
+            "description": "Aggregation interval. Values: 5m, 1h, 1d"
           },
           {
             "schema": {
               "type": "string",
-              "enum": [
-                "24h",
-                "7d",
-                "30d",
-                "90d"
-              ],
               "default": "7d"
             },
             "in": "query",
             "name": "range",
             "required": false,
-            "description": "Time window to query"
+            "description": "Time window to query. Values: 24h, 7d, 30d, 90d"
           },
           {
             "schema": {
               "type": "string",
-              "enum": [
-                "NEM",
-                "WEM"
-              ],
               "default": "NEM"
             },
             "in": "query",
             "name": "network",
             "required": false,
-            "description": "Network to query"
+            "description": "Network to query. Values: NEM, WEM"
           },
           {
             "schema": {
-              "type": "string",
-              "enum": [
-                "NSW1",
-                "QLD1",
-                "VIC1",
-                "SA1",
-                "TAS1",
-                "WEM"
-              ]
+              "type": "string"
             },
             "in": "query",
             "name": "region",
             "required": false,
-            "description": "Optional — filter to a specific region"
+            "description": "Optional — filter to a specific region. Values: NSW1, QLD1, VIC1, SA1, TAS1, WEM"
           },
           {
             "schema": {
@@ -2108,6 +1886,26 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Missing or invalid API key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "description": "Missing or invalid API key",
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "error": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -2124,7 +1922,7 @@
   },
   "servers": [
     {
-      "url": "http://ec2-54-226-204-58.compute-1.amazonaws.com:3000",
+      "url": "http://ec2-98-81-123-167.compute-1.amazonaws.com:3000",
       "description": "Production"
     },
     {

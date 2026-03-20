@@ -137,7 +137,7 @@ export const swaggerOpenApi: FastifyDynamicSwaggerOptions["openapi"] = {
   },
   servers: [
     {
-      url: "http://ec2-54-226-204-58.compute-1.amazonaws.com:3000",
+      url: "http://ec2-98-81-123-167.compute-1.amazonaws.com:3000",
       description: "Production"
     },
     {
