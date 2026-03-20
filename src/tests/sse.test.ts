@@ -124,8 +124,25 @@ describe("sse routes", () => {
     expect(writesAfterConnect).toContain("event: connected\n");
     expect(writesAfterConnect).toContain(
       `data: ${JSON.stringify({
-        timestamp: "2026-03-17T10:00:00.000Z",
-        snapshot: mocks.latestSnapshot,
+        data_source: "openelectricity",
+        dataset_type: "stream_snapshot",
+        dataset_id: "local-cache",
+        time_object: {
+          timestamp: "2026-03-17T10:00:00.000Z",
+          timezone: "UTC",
+        },
+        events: [
+          {
+            time_object: {
+              timestamp: "2026-03-17T10:00:00.000Z",
+              timezone: "UTC",
+            },
+            event_type: "stream_connected",
+            attribute: {
+              snapshot: mocks.latestSnapshot,
+            },
+          },
+        ],
       })}\n\n`,
     );
 
@@ -136,7 +153,25 @@ describe("sse routes", () => {
     const writesAfterUpdate = reply.raw.write.mock.calls.map(([chunk]) => String(chunk));
     expect(writesAfterUpdate).toContain("event: energy_update\n");
     expect(writesAfterUpdate).toContain(
-      `data: ${JSON.stringify({ NEM: { updated_at: "2026-03-17T10:05:00Z" } })}\n\n`,
+      `data: ${JSON.stringify({
+        data_source: "openelectricity",
+        dataset_type: "stream_snapshot",
+        dataset_id: "local-cache",
+        time_object: {
+          timestamp: "2026-03-17T10:00:00.000Z",
+          timezone: "UTC",
+        },
+        events: [
+          {
+            time_object: {
+              timestamp: "2026-03-17T10:00:00.000Z",
+              timezone: "UTC",
+            },
+            event_type: "energy_update",
+            attribute: { NEM: { updated_at: "2026-03-17T10:05:00Z" } },
+          },
+        ],
+      })}\n\n`,
     );
 
     vi.advanceTimersByTime(30000);
@@ -144,7 +179,27 @@ describe("sse routes", () => {
     const writesAfterHeartbeat = reply.raw.write.mock.calls.map(([chunk]) => String(chunk));
     expect(writesAfterHeartbeat).toContain("event: heartbeat\n");
     expect(writesAfterHeartbeat).toContain(
-      `data: ${JSON.stringify({ timestamp: "2026-03-17T10:00:30.000Z" })}\n\n`,
+      `data: ${JSON.stringify({
+        data_source: "openelectricity",
+        dataset_type: "stream_heartbeat",
+        dataset_id: "local-cache",
+        time_object: {
+          timestamp: "2026-03-17T10:00:30.000Z",
+          timezone: "UTC",
+        },
+        events: [
+          {
+            time_object: {
+              timestamp: "2026-03-17T10:00:30.000Z",
+              timezone: "UTC",
+              duration: 30,
+              duration_unit: "second",
+            },
+            event_type: "heartbeat",
+            attribute: { status: "alive" },
+          },
+        ],
+      })}\n\n`,
     );
     request.emitLocal("close");
     expect(mocks.emitterOffMock).toHaveBeenCalledWith("update", updateHandler);

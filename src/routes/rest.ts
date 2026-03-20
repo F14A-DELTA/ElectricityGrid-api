@@ -4,11 +4,12 @@ import type { FastifyPluginAsync, FastifyReply } from "fastify";
 import { enforceAuth } from "../auth";
 import { latestSnapshot, recentBuffer } from "../cache";
 import { lastPollAt } from "../poller";
+import { buildDatasetEnvelope } from "../response-format";
 import { computeStats, queryHistory } from "../s3-query";
 import type { HistoryQueryParams, NetworkCode } from "../types";
 import {
   errorResponse,
-  successResponse,
+  envelopeResponse,
   snapshotSummarySchema,
   snapshotEmissionsSchema,
   snapshotGenerationItemSchema,
@@ -43,12 +44,28 @@ function updatedAtForResponse(network?: NetworkCode): string {
   return timestamps.at(-1) ?? new Date().toISOString();
 }
 
-function sendSuccess(reply: FastifyReply, payload: unknown, updatedAt: string) {
-  return reply.send({
-    success: true,
-    updated_at: updatedAt,
-    data: payload,
-  });
+function sendSuccess(
+  reply: FastifyReply,
+  payload: unknown,
+  options: {
+    datasetType: string;
+    eventType: string;
+    updatedAt: string;
+    eventTimestamp?: string;
+    duration?: number;
+    durationUnit?: string;
+  },
+) {
+  return reply.send(
+    buildDatasetEnvelope(payload, {
+      datasetType: options.datasetType,
+      eventType: options.eventType,
+      datasetTimestamp: options.updatedAt,
+      eventTimestamp: options.eventTimestamp,
+      duration: options.duration,
+      durationUnit: options.durationUnit,
+    }),
+  );
 }
 
 const restRoutes: FastifyPluginAsync = async (fastify) => {
@@ -63,18 +80,24 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/v1/health", {
     schema: {
       summary: "Health check",
+      description: "Returns server uptime, last poll time, and cache buffer size. No authentication required.",
       tags: ["System"],
       security: [],
       response: {
-        200: successResponse("Server is healthy", {
-          type: "object",
-          properties: {
-            uptime:       { type: "number" },
-            last_poll_at: { type: "string", format: "date-time" },
-            buffer_size:  { type: "integer" },
-            status:       { type: "string", example: "ok" },
+        200: envelopeResponse(
+          "Server is healthy",
+          "health_status",
+          "health_check",
+          {
+            type: "object",
+            properties: {
+              uptime:       { type: "number",  description: "Server uptime in seconds", example: 3600 },
+              last_poll_at: { type: "string",  format: "date-time", nullable: true },
+              buffer_size:  { type: "integer", example: 12 },
+              status:       { type: "string",  example: "ok" },
+            },
           },
-        }),
+        ),
       },
     },
   }, async (_request, reply) => {
@@ -86,14 +109,18 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         buffer_size: recentBuffer.length,
         status: "ok",
       },
-      new Date().toISOString(),
+      {
+        datasetType: "health_status",
+        eventType: "health_check",
+        updatedAt: new Date().toISOString(),
+      },
     );
   });
 
   fastify.get("/v1/live", {
-     schema: {
+    schema: {
       summary: "Live snapshot for all networks or a specific network",
-      description: "Returns the latest energy snapshot. Optionally filter to a single network (NEM or WEM).",
+      description: "Returns the latest energy snapshot. Optionally filter to a single network (NEM or WEM). When network param is provided, attribute contains a single EnergySnapshot; otherwise it contains a map of NetworkCode to EnergySnapshot.",
       tags: ["Live Data"],
       querystring: {
         type: "object",
@@ -106,11 +133,16 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: successResponse("Live snapshot data", {
-          type: "object",
-          description: "Map of network code to EnergySnapshot",
-          additionalProperties: energySnapshotSchema,
-        }),
+        200: envelopeResponse(
+          "Live snapshot data",
+          "live_snapshot",
+          "network_snapshot",
+          {
+            type: "object",
+            description: "Map of network code to EnergySnapshot, or a single EnergySnapshot if network param is provided",
+            additionalProperties: energySnapshotSchema,
+          },
+        ),
         400: errorResponse("Invalid network code"),
         404: errorResponse("Snapshot not available"),
         503: errorResponse("Cache not yet warm"),
@@ -133,30 +165,42 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.code(404).send({ success: false, error: "Snapshot not available" });
       }
 
-      return sendSuccess(reply, snapshot, snapshot.updated_at);
+      return sendSuccess(reply, snapshot, {
+        datasetType: "live_snapshot",
+        eventType: "network_snapshot",
+        updatedAt: snapshot.updated_at,
+      });
     }
 
-    return sendSuccess(reply, latestSnapshot, updatedAtForResponse());
+    return sendSuccess(reply, latestSnapshot, {
+      datasetType: "live_snapshot_collection",
+      eventType: "snapshot_collection",
+      updatedAt: updatedAtForResponse(),
+    });
   });
 
   fastify.get("/v1/live/region/:region", {
-    schema: {
-      summary: "Live snapshot for a specific region",
-      description: "Returns the latest energy snapshot for a single NEM/WEM region including generation mix, price, demand, and emissions.",
-      tags: ["Live Data"],
-      params: {
-        type: "object",
-        required: ["region"],
-        properties: {
-          region: {
-            type: "string",
-            enum: ["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"],
-            description: "Region code",
-          },
+  schema: {
+    summary: "Live snapshot for a specific region",
+    description: "Returns the latest energy snapshot for a single NEM/WEM region including generation mix, price, demand, and emissions.",
+    tags: ["Live Data"],
+    params: {
+      type: "object",
+      required: ["region"],
+      properties: {
+        region: {
+          type: "string",
+          enum: ["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"],
+          description: "Region code",
         },
       },
-      response: {
-        200: successResponse("Region snapshot data", {
+    },
+    response: {
+      200: envelopeResponse(
+        "Region snapshot data",
+        "regional_live_snapshot",
+        "regional_snapshot",
+        {
           type: "object",
           properties: {
             region:               { type: "string", example: "NSW1" },
@@ -170,11 +214,12 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
             loads:                { type: "array", items: snapshotGenerationItemSchema },
             curtailment:          { type: "array", items: snapshotCurtailmentItemSchema },
           },
-        }),
-        404: errorResponse("Unknown or unavailable region"),
-        503: errorResponse("Cache not yet warm"),
-      },
+        },
+      ),
+      404: errorResponse("Unknown or unavailable region"),
+      503: errorResponse("Cache not yet warm"),
     },
+  },
   }, async (request, reply) => {
     const params = request.params as { region: string };
 
@@ -202,7 +247,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         updated_at: snapshot.updated_at,
         ...regionData,
       },
-      snapshot.updated_at,
+      {
+        datasetType: "regional_live_snapshot",
+        eventType: "regional_snapshot",
+        updatedAt: snapshot.updated_at,
+      },
     );
   });
 
@@ -212,18 +261,23 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       description: "Returns the current spot price ($/MWh) and demand (MW) for every available region across all networks.",
       tags: ["Live Data"],
       response: {
-        200: successResponse("Price and demand for all regions", {
-          type: "array",
-          items: {
-            type: "object",
-            properties: {
-              network:              { type: "string", enum: ["NEM", "WEM"] },
-              region:               { type: "string", example: "NSW1" },
-              price_dollar_per_mwh: { type: "number", nullable: true },
-              demand_mw:            { type: "number", nullable: true },
+        200: envelopeResponse(
+          "Price and demand for all regions",
+          "live_price_snapshot",
+          "regional_price_snapshot",
+          {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                network:              { type: "string", enum: ["NEM", "WEM"] },
+                region:               { type: "string", example: "NSW1" },
+                price_dollar_per_mwh: { type: "number", nullable: true },
+                demand_mw:            { type: "number", nullable: true },
+              },
             },
           },
-        }),
+        ),
         503: errorResponse("Cache not yet warm"),
       },
     },
@@ -241,7 +295,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
       })),
     );
 
-    return sendSuccess(reply, prices, updatedAtForResponse());
+    return sendSuccess(reply, prices, {
+      datasetType: "live_price_snapshot",
+      eventType: "regional_price_snapshot",
+      updatedAt: updatedAtForResponse(),
+    });
   });
 
   fastify.get("/v1/stats", {
@@ -272,14 +330,19 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: successResponse("Network statistics", {
-          type: "object",
-          properties: {
-            demand_mw:      rangeStatSchema,
-            renewables_pct: rangeStatSchema,
-            price:          rangeStatSchema,
+        200: envelopeResponse(
+          "Network statistics",
+          "range_statistics",
+          "statistics_summary",
+          {
+            type: "object",
+            properties: {
+              demand_mw:      rangeStatSchema,
+              renewables_pct: rangeStatSchema,
+              price:          rangeStatSchema,
+            },
           },
-        }),
+        ),
         400: errorResponse("Invalid query params"),
       },
     },
@@ -293,7 +356,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     }
 
     const stats = await computeStats(network, range, query.region);
-    return sendSuccess(reply, stats, updatedAtForResponse(network));
+    return sendSuccess(reply, stats, {
+      datasetType: "range_statistics",
+      eventType: "statistics_summary",
+      updatedAt: updatedAtForResponse(network),
+    });
   });
 
   fastify.get("/v1/history", {
@@ -340,15 +407,20 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         },
       },
       response: {
-        200: successResponse("Time series data", {
-          type: "object",
-          properties: {
-            metric:   { type: "string", example: "price" },
-            interval: { type: "string", example: "1h" },
-            range:    { type: "string", example: "7d" },
-            series:   { type: "array", items: historyPointSchema },
+        200: envelopeResponse(
+          "Time series data",
+          "historical_series",
+          "history_series",
+          {
+            type: "object",
+            properties: {
+              metric:   { type: "string", example: "price" },
+              interval: { type: "string", example: "1h" },
+              range:    { type: "string", example: "7d" },
+              series:   { type: "array", items: historyPointSchema },
+            },
           },
-        }),
+        ),
         400: errorResponse("Invalid query params — metric is required"),
       },
     },
@@ -380,7 +452,11 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
         range,
         series,
       },
-      updatedAtForResponse(network),
+      {
+        datasetType: "historical_series",
+        eventType: "history_series",
+        updatedAt: updatedAtForResponse(network),
+      },
     );
   });
 };

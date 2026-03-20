@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "title": "ElectricityGrid API",
-    "description": "Real-time and historical electricity grid data for Australian networks (NEM & WEM)",
-    "version": "1.0.0"
+    "description": "Real-time and historical electricity grid data for Australian networks (NEM & WEM) - to authorise use local-dev-token as the BearerAuth value!",
+    "version": "1.1.1"
   },
   "components": {
     "securitySchemes": {
@@ -549,6 +549,64 @@
           }
         }
       },
+      "TimeObject": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "timezone": {
+            "type": "string",
+            "example": "UTC"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "duration_unit": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "timestamp",
+          "timezone"
+        ]
+      },
+      "DatasetEnvelope": {
+        "type": "object",
+        "properties": {
+          "data_source": {
+            "type": "string",
+            "example": "openelectricity"
+          },
+          "dataset_type": {
+            "type": "string"
+          },
+          "dataset_id": {
+            "type": "string"
+          },
+          "time_object": {
+            "$ref": "#/components/schemas/TimeObject"
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "time_object": {
+                  "$ref": "#/components/schemas/TimeObject"
+                },
+                "event_type": {
+                  "type": "string"
+                },
+                "attribute": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      },
       "ErrorResponse": {
         "type": "object",
         "properties": {
@@ -570,6 +628,7 @@
         "tags": [
           "System"
         ],
+        "description": "Returns server uptime, last poll time, and cache buffer size. No authentication required.",
         "security": [],
         "responses": {
           "200": {
@@ -580,30 +639,96 @@
                   "description": "Server is healthy",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "updated_at": {
+                    "data_source": {
                       "type": "string",
-                      "format": "date-time"
+                      "example": "openelectricity"
                     },
-                    "data": {
+                    "dataset_type": {
+                      "type": "string",
+                      "example": "health_status"
+                    },
+                    "dataset_id": {
+                      "type": "string",
+                      "example": "http://my-bucket.s3-website-us-east-1.amazonaws.com"
+                    },
+                    "time_object": {
                       "type": "object",
                       "properties": {
-                        "uptime": {
-                          "type": "number"
-                        },
-                        "last_poll_at": {
+                        "timestamp": {
                           "type": "string",
                           "format": "date-time"
                         },
-                        "buffer_size": {
-                          "type": "integer"
-                        },
-                        "status": {
+                        "timezone": {
                           "type": "string",
-                          "example": "ok"
+                          "example": "UTC"
+                        },
+                        "duration": {
+                          "type": "number"
+                        },
+                        "duration_unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "timestamp",
+                        "timezone"
+                      ]
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "time_object": {
+                            "type": "object",
+                            "properties": {
+                              "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "timezone": {
+                                "type": "string",
+                                "example": "UTC"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "duration_unit": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "timestamp",
+                              "timezone"
+                            ]
+                          },
+                          "event_type": {
+                            "type": "string",
+                            "example": "health_check"
+                          },
+                          "attribute": {
+                            "type": "object",
+                            "properties": {
+                              "uptime": {
+                                "type": "number",
+                                "description": "Server uptime in seconds",
+                                "example": 3600
+                              },
+                              "last_poll_at": {
+                                "type": "string",
+                                "format": "date-time",
+                                "nullable": true
+                              },
+                              "buffer_size": {
+                                "type": "integer",
+                                "example": 12
+                              },
+                              "status": {
+                                "type": "string",
+                                "example": "ok"
+                              }
+                            }
+                          }
                         }
                       }
                     }
@@ -621,7 +746,7 @@
         "tags": [
           "Live Data"
         ],
-        "description": "Returns the latest energy snapshot. Optionally filter to a single network (NEM or WEM).",
+        "description": "Returns the latest energy snapshot. Optionally filter to a single network (NEM or WEM). When network param is provided, attribute contains a single EnergySnapshot; otherwise it contains a map of NetworkCode to EnergySnapshot.",
         "parameters": [
           {
             "schema": {
@@ -646,159 +771,89 @@
                   "description": "Live snapshot data",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "updated_at": {
+                    "data_source": {
                       "type": "string",
-                      "format": "date-time"
+                      "example": "openelectricity"
                     },
-                    "data": {
+                    "dataset_type": {
+                      "type": "string",
+                      "example": "live_snapshot"
+                    },
+                    "dataset_id": {
+                      "type": "string",
+                      "example": "http://my-bucket.s3-website-us-east-1.amazonaws.com"
+                    },
+                    "time_object": {
                       "type": "object",
-                      "description": "Map of network code to EnergySnapshot",
-                      "additionalProperties": {
+                      "properties": {
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "timezone": {
+                          "type": "string",
+                          "example": "UTC"
+                        },
+                        "duration": {
+                          "type": "number"
+                        },
+                        "duration_unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "timestamp",
+                        "timezone"
+                      ]
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
                         "type": "object",
                         "properties": {
-                          "updated_at": {
-                            "type": "string",
-                            "format": "date-time"
-                          },
-                          "network": {
-                            "type": "string",
-                            "enum": [
-                              "NEM",
-                              "WEM"
+                          "time_object": {
+                            "type": "object",
+                            "properties": {
+                              "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "timezone": {
+                                "type": "string",
+                                "example": "UTC"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "duration_unit": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "timestamp",
+                              "timezone"
                             ]
                           },
-                          "summary": {
+                          "event_type": {
+                            "type": "string",
+                            "example": "network_snapshot"
+                          },
+                          "attribute": {
                             "type": "object",
-                            "properties": {
-                              "net_generation_mw": {
-                                "type": "number",
-                                "nullable": true
-                              },
-                              "renewables_mw": {
-                                "type": "number",
-                                "nullable": true
-                              },
-                              "renewables_pct": {
-                                "type": "number",
-                                "nullable": true
-                              },
-                              "demand_mw": {
-                                "type": "number",
-                                "nullable": true
-                              }
-                            }
-                          },
-                          "emissions": {
-                            "type": "object",
-                            "properties": {
-                              "volume_tco2e_per_30m": {
-                                "type": "number",
-                                "nullable": true
-                              },
-                              "intensity_kgco2e_per_mwh": {
-                                "type": "number",
-                                "nullable": true
-                              }
-                            }
-                          },
-                          "generation": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "fueltech": {
-                                  "type": "string"
-                                },
-                                "label": {
-                                  "type": "string"
-                                },
-                                "power_mw": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "proportion_pct": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "price_dollar_per_mwh": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "total_energy_mwh": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            }
-                          },
-                          "loads": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "fueltech": {
-                                  "type": "string"
-                                },
-                                "label": {
-                                  "type": "string"
-                                },
-                                "power_mw": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "proportion_pct": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "price_dollar_per_mwh": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "total_energy_mwh": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            }
-                          },
-                          "curtailment": {
-                            "type": "array",
-                            "items": {
-                              "type": "object",
-                              "properties": {
-                                "fueltech": {
-                                  "type": "string"
-                                },
-                                "label": {
-                                  "type": "string"
-                                },
-                                "power_mw": {
-                                  "type": "number",
-                                  "nullable": true
-                                },
-                                "proportion_pct": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            }
-                          },
-                          "regions": {
-                            "type": "object",
+                            "description": "Map of network code to EnergySnapshot, or a single EnergySnapshot if network param is provided",
                             "additionalProperties": {
                               "type": "object",
                               "properties": {
-                                "price_dollar_per_mwh": {
-                                  "type": "number",
-                                  "nullable": true
+                                "updated_at": {
+                                  "type": "string",
+                                  "format": "date-time"
                                 },
-                                "demand_mw": {
-                                  "type": "number",
-                                  "nullable": true
+                                "network": {
+                                  "type": "string",
+                                  "enum": [
+                                    "NEM",
+                                    "WEM"
+                                  ]
                                 },
                                 "summary": {
                                   "type": "object",
@@ -915,6 +970,138 @@
                                       }
                                     }
                                   }
+                                },
+                                "regions": {
+                                  "type": "object",
+                                  "additionalProperties": {
+                                    "type": "object",
+                                    "properties": {
+                                      "price_dollar_per_mwh": {
+                                        "type": "number",
+                                        "nullable": true
+                                      },
+                                      "demand_mw": {
+                                        "type": "number",
+                                        "nullable": true
+                                      },
+                                      "summary": {
+                                        "type": "object",
+                                        "properties": {
+                                          "net_generation_mw": {
+                                            "type": "number",
+                                            "nullable": true
+                                          },
+                                          "renewables_mw": {
+                                            "type": "number",
+                                            "nullable": true
+                                          },
+                                          "renewables_pct": {
+                                            "type": "number",
+                                            "nullable": true
+                                          },
+                                          "demand_mw": {
+                                            "type": "number",
+                                            "nullable": true
+                                          }
+                                        }
+                                      },
+                                      "emissions": {
+                                        "type": "object",
+                                        "properties": {
+                                          "volume_tco2e_per_30m": {
+                                            "type": "number",
+                                            "nullable": true
+                                          },
+                                          "intensity_kgco2e_per_mwh": {
+                                            "type": "number",
+                                            "nullable": true
+                                          }
+                                        }
+                                      },
+                                      "generation": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "fueltech": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            },
+                                            "power_mw": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "proportion_pct": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "price_dollar_per_mwh": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "total_energy_mwh": {
+                                              "type": "number",
+                                              "nullable": true
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "loads": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "fueltech": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            },
+                                            "power_mw": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "proportion_pct": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "price_dollar_per_mwh": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "total_energy_mwh": {
+                                              "type": "number",
+                                              "nullable": true
+                                            }
+                                          }
+                                        }
+                                      },
+                                      "curtailment": {
+                                        "type": "array",
+                                        "items": {
+                                          "type": "object",
+                                          "properties": {
+                                            "fueltech": {
+                                              "type": "string"
+                                            },
+                                            "label": {
+                                              "type": "string"
+                                            },
+                                            "power_mw": {
+                                              "type": "number",
+                                              "nullable": true
+                                            },
+                                            "proportion_pct": {
+                                              "type": "number",
+                                              "nullable": true
+                                            }
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -1025,152 +1212,214 @@
                   "description": "Region snapshot data",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "updated_at": {
+                    "data_source": {
                       "type": "string",
-                      "format": "date-time"
+                      "example": "openelectricity"
                     },
-                    "data": {
+                    "dataset_type": {
+                      "type": "string",
+                      "example": "regional_live_snapshot"
+                    },
+                    "dataset_id": {
+                      "type": "string",
+                      "example": "http://my-bucket.s3-website-us-east-1.amazonaws.com"
+                    },
+                    "time_object": {
                       "type": "object",
                       "properties": {
-                        "region": {
-                          "type": "string",
-                          "example": "NSW1"
-                        },
-                        "network": {
-                          "type": "string",
-                          "enum": [
-                            "NEM",
-                            "WEM"
-                          ]
-                        },
-                        "updated_at": {
+                        "timestamp": {
                           "type": "string",
                           "format": "date-time"
                         },
-                        "price_dollar_per_mwh": {
-                          "type": "number",
-                          "nullable": true
+                        "timezone": {
+                          "type": "string",
+                          "example": "UTC"
                         },
-                        "demand_mw": {
-                          "type": "number",
-                          "nullable": true
+                        "duration": {
+                          "type": "number"
                         },
-                        "summary": {
-                          "type": "object",
-                          "properties": {
-                            "net_generation_mw": {
-                              "type": "number",
-                              "nullable": true
-                            },
-                            "renewables_mw": {
-                              "type": "number",
-                              "nullable": true
-                            },
-                            "renewables_pct": {
-                              "type": "number",
-                              "nullable": true
-                            },
-                            "demand_mw": {
-                              "type": "number",
-                              "nullable": true
-                            }
-                          }
-                        },
-                        "emissions": {
-                          "type": "object",
-                          "properties": {
-                            "volume_tco2e_per_30m": {
-                              "type": "number",
-                              "nullable": true
-                            },
-                            "intensity_kgco2e_per_mwh": {
-                              "type": "number",
-                              "nullable": true
-                            }
-                          }
-                        },
-                        "generation": {
-                          "type": "array",
-                          "items": {
+                        "duration_unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "timestamp",
+                        "timezone"
+                      ]
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "time_object": {
                             "type": "object",
                             "properties": {
-                              "fueltech": {
+                              "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "timezone": {
+                                "type": "string",
+                                "example": "UTC"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "duration_unit": {
                                 "type": "string"
+                              }
+                            },
+                            "required": [
+                              "timestamp",
+                              "timezone"
+                            ]
+                          },
+                          "event_type": {
+                            "type": "string",
+                            "example": "regional_snapshot"
+                          },
+                          "attribute": {
+                            "type": "object",
+                            "properties": {
+                              "region": {
+                                "type": "string",
+                                "example": "NSW1"
                               },
-                              "label": {
-                                "type": "string"
+                              "network": {
+                                "type": "string",
+                                "enum": [
+                                  "NEM",
+                                  "WEM"
+                                ]
                               },
-                              "power_mw": {
-                                "type": "number",
-                                "nullable": true
-                              },
-                              "proportion_pct": {
-                                "type": "number",
-                                "nullable": true
+                              "updated_at": {
+                                "type": "string",
+                                "format": "date-time"
                               },
                               "price_dollar_per_mwh": {
                                 "type": "number",
                                 "nullable": true
                               },
-                              "total_energy_mwh": {
-                                "type": "number",
-                                "nullable": true
-                              }
-                            }
-                          }
-                        },
-                        "loads": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "fueltech": {
-                                "type": "string"
-                              },
-                              "label": {
-                                "type": "string"
-                              },
-                              "power_mw": {
+                              "demand_mw": {
                                 "type": "number",
                                 "nullable": true
                               },
-                              "proportion_pct": {
-                                "type": "number",
-                                "nullable": true
+                              "summary": {
+                                "type": "object",
+                                "properties": {
+                                  "net_generation_mw": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "renewables_mw": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "renewables_pct": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "demand_mw": {
+                                    "type": "number",
+                                    "nullable": true
+                                  }
+                                }
                               },
-                              "price_dollar_per_mwh": {
-                                "type": "number",
-                                "nullable": true
+                              "emissions": {
+                                "type": "object",
+                                "properties": {
+                                  "volume_tco2e_per_30m": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "intensity_kgco2e_per_mwh": {
+                                    "type": "number",
+                                    "nullable": true
+                                  }
+                                }
                               },
-                              "total_energy_mwh": {
-                                "type": "number",
-                                "nullable": true
-                              }
-                            }
-                          }
-                        },
-                        "curtailment": {
-                          "type": "array",
-                          "items": {
-                            "type": "object",
-                            "properties": {
-                              "fueltech": {
-                                "type": "string"
+                              "generation": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "fueltech": {
+                                      "type": "string"
+                                    },
+                                    "label": {
+                                      "type": "string"
+                                    },
+                                    "power_mw": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "proportion_pct": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "price_dollar_per_mwh": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "total_energy_mwh": {
+                                      "type": "number",
+                                      "nullable": true
+                                    }
+                                  }
+                                }
                               },
-                              "label": {
-                                "type": "string"
+                              "loads": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "fueltech": {
+                                      "type": "string"
+                                    },
+                                    "label": {
+                                      "type": "string"
+                                    },
+                                    "power_mw": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "proportion_pct": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "price_dollar_per_mwh": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "total_energy_mwh": {
+                                      "type": "number",
+                                      "nullable": true
+                                    }
+                                  }
+                                }
                               },
-                              "power_mw": {
-                                "type": "number",
-                                "nullable": true
-                              },
-                              "proportion_pct": {
-                                "type": "number",
-                                "nullable": true
+                              "curtailment": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "fueltech": {
+                                      "type": "string"
+                                    },
+                                    "label": {
+                                      "type": "string"
+                                    },
+                                    "power_mw": {
+                                      "type": "number",
+                                      "nullable": true
+                                    },
+                                    "proportion_pct": {
+                                      "type": "number",
+                                      "nullable": true
+                                    }
+                                  }
+                                }
                               }
                             }
                           }
@@ -1241,37 +1490,99 @@
                   "description": "Price and demand for all regions",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "updated_at": {
+                    "data_source": {
                       "type": "string",
-                      "format": "date-time"
+                      "example": "openelectricity"
                     },
-                    "data": {
+                    "dataset_type": {
+                      "type": "string",
+                      "example": "live_price_snapshot"
+                    },
+                    "dataset_id": {
+                      "type": "string",
+                      "example": "http://my-bucket.s3-website-us-east-1.amazonaws.com"
+                    },
+                    "time_object": {
+                      "type": "object",
+                      "properties": {
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "timezone": {
+                          "type": "string",
+                          "example": "UTC"
+                        },
+                        "duration": {
+                          "type": "number"
+                        },
+                        "duration_unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "timestamp",
+                        "timezone"
+                      ]
+                    },
+                    "events": {
                       "type": "array",
                       "items": {
                         "type": "object",
                         "properties": {
-                          "network": {
-                            "type": "string",
-                            "enum": [
-                              "NEM",
-                              "WEM"
+                          "time_object": {
+                            "type": "object",
+                            "properties": {
+                              "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "timezone": {
+                                "type": "string",
+                                "example": "UTC"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "duration_unit": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "timestamp",
+                              "timezone"
                             ]
                           },
-                          "region": {
+                          "event_type": {
                             "type": "string",
-                            "example": "NSW1"
+                            "example": "regional_price_snapshot"
                           },
-                          "price_dollar_per_mwh": {
-                            "type": "number",
-                            "nullable": true
-                          },
-                          "demand_mw": {
-                            "type": "number",
-                            "nullable": true
+                          "attribute": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "network": {
+                                  "type": "string",
+                                  "enum": [
+                                    "NEM",
+                                    "WEM"
+                                  ]
+                                },
+                                "region": {
+                                  "type": "string",
+                                  "example": "NSW1"
+                                },
+                                "price_dollar_per_mwh": {
+                                  "type": "number",
+                                  "nullable": true
+                                },
+                                "demand_mw": {
+                                  "type": "number",
+                                  "nullable": true
+                                }
+                              }
+                            }
                           }
                         }
                       }
@@ -1368,105 +1679,167 @@
                   "description": "Network statistics",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "updated_at": {
+                    "data_source": {
                       "type": "string",
-                      "format": "date-time"
+                      "example": "openelectricity"
                     },
-                    "data": {
+                    "dataset_type": {
+                      "type": "string",
+                      "example": "range_statistics"
+                    },
+                    "dataset_id": {
+                      "type": "string",
+                      "example": "http://my-bucket.s3-website-us-east-1.amazonaws.com"
+                    },
+                    "time_object": {
                       "type": "object",
                       "properties": {
-                        "demand_mw": {
-                          "type": "object",
-                          "properties": {
-                            "min": {
-                              "type": "object",
-                              "properties": {
-                                "timestamp": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            },
-                            "max": {
-                              "type": "object",
-                              "properties": {
-                                "timestamp": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            }
-                          }
+                        "timestamp": {
+                          "type": "string",
+                          "format": "date-time"
                         },
-                        "renewables_pct": {
-                          "type": "object",
-                          "properties": {
-                            "min": {
-                              "type": "object",
-                              "properties": {
-                                "timestamp": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            },
-                            "max": {
-                              "type": "object",
-                              "properties": {
-                                "timestamp": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
-                              }
-                            }
-                          }
+                        "timezone": {
+                          "type": "string",
+                          "example": "UTC"
                         },
-                        "price": {
-                          "type": "object",
-                          "properties": {
-                            "min": {
-                              "type": "object",
-                              "properties": {
-                                "timestamp": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
-                                }
+                        "duration": {
+                          "type": "number"
+                        },
+                        "duration_unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "timestamp",
+                        "timezone"
+                      ]
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "time_object": {
+                            "type": "object",
+                            "properties": {
+                              "timestamp": {
+                                "type": "string",
+                                "format": "date-time"
+                              },
+                              "timezone": {
+                                "type": "string",
+                                "example": "UTC"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "duration_unit": {
+                                "type": "string"
                               }
                             },
-                            "max": {
-                              "type": "object",
-                              "properties": {
-                                "timestamp": {
-                                  "type": "string",
-                                  "format": "date-time"
-                                },
-                                "value": {
-                                  "type": "number",
-                                  "nullable": true
+                            "required": [
+                              "timestamp",
+                              "timezone"
+                            ]
+                          },
+                          "event_type": {
+                            "type": "string",
+                            "example": "statistics_summary"
+                          },
+                          "attribute": {
+                            "type": "object",
+                            "properties": {
+                              "demand_mw": {
+                                "type": "object",
+                                "properties": {
+                                  "min": {
+                                    "type": "object",
+                                    "properties": {
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "value": {
+                                        "type": "number",
+                                        "nullable": true
+                                      }
+                                    }
+                                  },
+                                  "max": {
+                                    "type": "object",
+                                    "properties": {
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "value": {
+                                        "type": "number",
+                                        "nullable": true
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "renewables_pct": {
+                                "type": "object",
+                                "properties": {
+                                  "min": {
+                                    "type": "object",
+                                    "properties": {
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "value": {
+                                        "type": "number",
+                                        "nullable": true
+                                      }
+                                    }
+                                  },
+                                  "max": {
+                                    "type": "object",
+                                    "properties": {
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "value": {
+                                        "type": "number",
+                                        "nullable": true
+                                      }
+                                    }
+                                  }
+                                }
+                              },
+                              "price": {
+                                "type": "object",
+                                "properties": {
+                                  "min": {
+                                    "type": "object",
+                                    "properties": {
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "value": {
+                                        "type": "number",
+                                        "nullable": true
+                                      }
+                                    }
+                                  },
+                                  "max": {
+                                    "type": "object",
+                                    "properties": {
+                                      "timestamp": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                      },
+                                      "value": {
+                                        "type": "number",
+                                        "nullable": true
+                                      }
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -1608,41 +1981,103 @@
                   "description": "Time series data",
                   "type": "object",
                   "properties": {
-                    "success": {
-                      "type": "boolean",
-                      "example": true
-                    },
-                    "updated_at": {
+                    "data_source": {
                       "type": "string",
-                      "format": "date-time"
+                      "example": "openelectricity"
                     },
-                    "data": {
+                    "dataset_type": {
+                      "type": "string",
+                      "example": "historical_series"
+                    },
+                    "dataset_id": {
+                      "type": "string",
+                      "example": "http://my-bucket.s3-website-us-east-1.amazonaws.com"
+                    },
+                    "time_object": {
                       "type": "object",
                       "properties": {
-                        "metric": {
+                        "timestamp": {
                           "type": "string",
-                          "example": "price"
+                          "format": "date-time"
                         },
-                        "interval": {
+                        "timezone": {
                           "type": "string",
-                          "example": "1h"
+                          "example": "UTC"
                         },
-                        "range": {
-                          "type": "string",
-                          "example": "7d"
+                        "duration": {
+                          "type": "number"
                         },
-                        "series": {
-                          "type": "array",
-                          "items": {
+                        "duration_unit": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "timestamp",
+                        "timezone"
+                      ]
+                    },
+                    "events": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "time_object": {
                             "type": "object",
                             "properties": {
                               "timestamp": {
                                 "type": "string",
                                 "format": "date-time"
                               },
-                              "value": {
-                                "type": "number",
-                                "nullable": true
+                              "timezone": {
+                                "type": "string",
+                                "example": "UTC"
+                              },
+                              "duration": {
+                                "type": "number"
+                              },
+                              "duration_unit": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "timestamp",
+                              "timezone"
+                            ]
+                          },
+                          "event_type": {
+                            "type": "string",
+                            "example": "history_series"
+                          },
+                          "attribute": {
+                            "type": "object",
+                            "properties": {
+                              "metric": {
+                                "type": "string",
+                                "example": "price"
+                              },
+                              "interval": {
+                                "type": "string",
+                                "example": "1h"
+                              },
+                              "range": {
+                                "type": "string",
+                                "example": "7d"
+                              },
+                              "series": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "timestamp": {
+                                      "type": "string",
+                                      "format": "date-time"
+                                    },
+                                    "value": {
+                                      "type": "number",
+                                      "nullable": true
+                                    }
+                                  }
+                                }
                               }
                             }
                           }

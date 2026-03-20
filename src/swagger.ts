@@ -87,12 +87,53 @@ export const rangeStatSchema = {
   },
 } as const;
 
+export const timeObjectSchema = {
+  type: "object",
+  properties: {
+    timestamp:     { type: "string", format: "date-time" },
+    timezone:      { type: "string", example: "UTC" },
+    duration:      { type: "number" },
+    duration_unit: { type: "string" },
+  },
+  required: ["timestamp", "timezone"],
+} as const;
+
+export function envelopeResponse(
+  description: string,
+  datasetTypeExample: string,
+  eventTypeExample: string,
+  attributeSchema: object,
+) {
+  return {
+    description,
+    type: "object",
+    properties: {
+      data_source:  { type: "string", example: "openelectricity" },
+      dataset_type: { type: "string", example: datasetTypeExample },
+      dataset_id:   { type: "string", example: "http://my-bucket.s3-website-us-east-1.amazonaws.com" },
+      time_object:  timeObjectSchema,
+      events: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            time_object: timeObjectSchema,
+            event_type:  { type: "string", example: eventTypeExample },
+            attribute:   attributeSchema,
+          },
+        },
+      },
+    },
+  };
+}
+
+
 export const swaggerOpenApi: FastifyDynamicSwaggerOptions["openapi"] = {
   openapi: "3.0.0",
   info: {
     title: "ElectricityGrid API",
-    description: "Real-time and historical electricity grid data for Australian networks (NEM & WEM)",
-    version: "1.0.0",
+    description: "Real-time and historical electricity grid data for Australian networks (NEM & WEM) - to authorise use local-dev-token as the BearerAuth value!",
+    version: "1.1.1",
   },
   servers: [
     {
@@ -122,14 +163,35 @@ export const swaggerOpenApi: FastifyDynamicSwaggerOptions["openapi"] = {
         enum: ["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"],
       },
       // ← reusing the exported constants directly, no duplication
-      SnapshotSummary:        snapshotSummarySchema,
-      SnapshotEmissions:      snapshotEmissionsSchema,
+      SnapshotSummary: snapshotSummarySchema,
+      SnapshotEmissions: snapshotEmissionsSchema,
       SnapshotGenerationItem: snapshotGenerationItemSchema,
       SnapshotCurtailmentItem:snapshotCurtailmentItemSchema,
-      RegionSnapshot:         regionSnapshotSchema,
-      EnergySnapshot:         energySnapshotSchema as any,
-      RangeStat:              rangeStatSchema,
-      HistoryPoint:           historyPointSchema,
+      RegionSnapshot: regionSnapshotSchema,
+      EnergySnapshot: energySnapshotSchema as any,
+      RangeStat: rangeStatSchema,
+      HistoryPoint: historyPointSchema,
+      TimeObject: timeObjectSchema as any,
+      DatasetEnvelope: {
+        type: "object",
+        properties: {
+          data_source:  { type: "string", example: "openelectricity" },
+          dataset_type: { type: "string" },
+          dataset_id:   { type: "string" },
+          time_object:  { $ref: "#/components/schemas/TimeObject" },
+          events: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                time_object: { $ref: "#/components/schemas/TimeObject" },
+                event_type:  { type: "string" },
+                attribute:   { type: "object" },
+              },
+            },
+          },
+        },
+      },
       ErrorResponse: {
         type: "object",
         properties: {
@@ -141,21 +203,7 @@ export const swaggerOpenApi: FastifyDynamicSwaggerOptions["openapi"] = {
   },
   security: [{ BearerAuth: [] }],
 };
- 
-// ── Response helpers for use in route schema definitions ─────────────────────
- 
-export function successResponse(description: string, dataSchema: object) {
-  return {
-    description,
-    type: "object",
-    properties: {
-      success:    { type: "boolean", example: true },
-      updated_at: { type: "string", format: "date-time" },
-      data:       dataSchema,
-    },
-  };
-}
- 
+
 export function errorResponse(description: string) {
   return {
     description,
