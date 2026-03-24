@@ -25,7 +25,7 @@ Check the service:
 curl http://localhost:3000/v1/health
 ```
 
-For protected endpoints, send the API key as a bearer token:
+For protected endpoints, send the API key as a bearer token (use local-dev-token):
 
 ```bash
 curl http://localhost:3000/v1/live \
