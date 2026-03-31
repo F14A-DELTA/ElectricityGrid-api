@@ -18,7 +18,7 @@ export default defineConfig({
         "src/generate-swagger.ts",
         "src/types.ts"
       ],
-      reporter: ["text", "html", "json-summary"]
+      reporter: ["text", "html", "json-summary", "lcov"]
     }
   }
 });
