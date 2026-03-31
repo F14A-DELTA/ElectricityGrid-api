@@ -18,7 +18,13 @@ export default defineConfig({
         "src/generate-swagger.ts",
         "src/types.ts"
       ],
-      reporter: ["text", "html", "json-summary", "lcov"]
+      reporter: ["text", "html", "json-summary", "lcov"],
+      thresholds: {
+        lines: 70,
+        functions: 70,
+        branches: 60,
+        statements: 70
+      }
     }
   }
 });
