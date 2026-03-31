@@ -285,7 +285,7 @@ const wsRoutes: FastifyPluginAsync = async (fastify) => {
             payload.regions?.forEach((region) => subscriptions.regions.delete(region));
             payload.metrics?.forEach((metric) => subscriptions.metrics.delete(metric));
           }
-        } catch (error) {
+        } catch (_error) {
           socket.send(
             JSON.stringify({
               event: "error",

@@ -188,7 +188,7 @@ describe("rest routes", () => {
     const bad = await app.inject({ method: "GET", url: "/v1/live?network=BAD" });
     expect(bad.statusCode).toBe(400);
 
-    const missing = await app.inject({ method: "GET", url: "/v1/live?network=WEM" });
+    await app.inject({ method: "GET", url: "/v1/live?network=WEM" });
     
     mocks.latestSnapshot = { NEM: mocks.latestSnapshot.NEM };
     const missing2 = await app.inject({ method: "GET", url: "/v1/live?network=WEM" });
