@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => {
     sseRoutes: vi.fn(),
     wsRoutes: vi.fn(),
     websocketPlugin: vi.fn(),
+    corsPlugin: vi.fn(),
   };
 })
 
@@ -46,6 +47,10 @@ vi.mock("../routes/sse", () => ({
 
 vi.mock("../routes/ws", () => ({
   default: mocks.wsRoutes,
+}));
+
+vi.mock("@fastify/cors", () => ({
+  default: mocks.corsPlugin,
 }));
 
 async function importIndexFresh() {
@@ -79,6 +84,7 @@ describe("index file tests", () => {
         await importIndexFresh();
 
         expect(mocks.fastifyFactory).toHaveBeenCalledWith({ logger: true });
+        expect(mocks.fastifyInstance.register).toHaveBeenCalledWith(mocks.corsPlugin, { origin: true });
 
         expect(mocks.fastifyInstance.register).toHaveBeenCalledWith(mocks.websocketPlugin);
         expect(mocks.fastifyInstance.register).toHaveBeenCalledWith(mocks.restRoutes);
