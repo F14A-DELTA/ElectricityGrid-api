@@ -24,6 +24,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npm test
       - run: npm run test:coverage
       - uses: actions/upload-artifact@v4
@@ -48,6 +49,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npm test
       - run: npm run test:coverage
       - uses: actions/upload-artifact@v4
@@ -72,6 +74,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      - run: npm run build
       - run: npm test
       - run: npm run test:coverage
       - uses: actions/upload-artifact@v4

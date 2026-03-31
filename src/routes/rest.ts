@@ -7,6 +7,17 @@ import { lastPollAt } from "../poller";
 import { buildDatasetEnvelope } from "../response-format";
 import { computeStats, queryHistory } from "../s3-query";
 import type { HistoryQueryParams, NetworkCode } from "../types";
+import {
+  errorResponse,
+  envelopeResponse,
+  snapshotSummarySchema,
+  snapshotEmissionsSchema,
+  snapshotGenerationItemSchema,
+  snapshotCurtailmentItemSchema,
+  energySnapshotSchema,
+  rangeStatSchema,
+  historyPointSchema,
+} from "../swagger";
 
 const VALID_NETWORKS = new Set<NetworkCode>(["NEM", "WEM"]);
 const VALID_REGIONS = new Set(["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"]);
@@ -69,49 +80,24 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/v1/health", {
     schema: {
       summary: "Health check",
+      description: "Returns server uptime, last poll time, and cache buffer size. No authentication required.",
+      tags: ["System"],
       security: [],
       response: {
-        200: {
-          description: "Server is healthy",
-          type: "object",
-          properties: {
-            data_source:  { type: "string", example: "openelectricity" },
-            dataset_type: { type: "string", example: "health_status" },
-            dataset_id:   { type: "string" },
-            time_object: {
-              type: "object",
-              properties: {
-                timestamp: { type: "string", format: "date-time" },
-                timezone:  { type: "string", example: "UTC" },
-              },
-            },
-            events: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  time_object: {
-                    type: "object",
-                    properties: {
-                      timestamp: { type: "string", format: "date-time" },
-                      timezone:  { type: "string", example: "UTC" },
-                    },
-                  },
-                  event_type: { type: "string", example: "health_check" },
-                  attribute: {
-                    type: "object",
-                    properties: {
-                      uptime:       { type: "number" },
-                      last_poll_at: { type: "string", format: "date-time", nullable: true },
-                      buffer_size:  { type: "integer" },
-                      status:       { type: "string", example: "ok" },
-                    },
-                  },
-                },
-              },
+        200: envelopeResponse(
+          "Server is healthy",
+          "health_status",
+          "health_check",
+          {
+            type: "object",
+            properties: {
+              uptime:       { type: "number",  description: "Server uptime in seconds", example: 3600 },
+              last_poll_at: { type: "string",  format: "date-time", nullable: true },
+              buffer_size:  { type: "integer", example: 12 },
+              status:       { type: "string",  example: "ok" },
             },
           },
-        },
+        ),
       },
     },
   }, async (_request, reply) => {
@@ -131,7 +117,39 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     );
   });
 
-  fastify.get("/v1/live", async (request, reply) => {
+  fastify.get("/v1/live", {
+    schema: {
+      summary: "Live snapshot for all networks or a specific network",
+      description: "Returns the latest energy snapshot. Optionally filter to a single network (NEM or WEM). When network param is provided, attribute contains a single EnergySnapshot; otherwise it contains a map of NetworkCode to EnergySnapshot.",
+      tags: ["Live Data"],
+      querystring: {
+        type: "object",
+        properties: {
+          network: {
+            type: "string",
+            enum: ["NEM", "WEM"],
+            description: "Filter results to a specific network",
+          },
+        },
+      },
+      response: {
+        200: envelopeResponse(
+          "Live snapshot data",
+          "live_snapshot",
+          "network_snapshot",
+          {
+            type: "object",
+            description: "Map of network code to EnergySnapshot, or a single EnergySnapshot if network param is provided",
+            additionalProperties: true,
+          },
+        ),
+        401: errorResponse("Missing or invalid API key"),
+        400: errorResponse("Invalid network code"),
+        404: errorResponse("Snapshot not available"),
+        503: errorResponse("Cache not yet warm"),
+      },
+    },
+  }, async (request, reply) => {
     const query = request.query as { network?: NetworkCode };
 
     if (!latestSnapshot || Object.keys(latestSnapshot).length === 0) {
@@ -162,7 +180,48 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     });
   });
 
-  fastify.get("/v1/live/region/:region", async (request, reply) => {
+  fastify.get("/v1/live/region/:region", {
+  schema: {
+    summary: "Live snapshot for a specific region",
+    description: "Returns the latest energy snapshot for a single NEM/WEM region including generation mix, price, demand, and emissions.",
+    tags: ["Live Data"],
+    params: {
+      type: "object",
+      required: ["region"],
+      properties: {
+        region: {
+          type: "string",
+          description: "Region code. Values: NSW1, QLD1, VIC1, SA1, TAS1, WEM",
+        },
+      },
+    },
+    response: {
+      200: envelopeResponse(
+        "Region snapshot data",
+        "regional_live_snapshot",
+        "regional_snapshot",
+        {
+          type: "object",
+          properties: {
+            region:               { type: "string", example: "NSW1" },
+            network:              { type: "string", enum: ["NEM", "WEM"] },
+            updated_at:           { type: "string", format: "date-time" },
+            price_dollar_per_mwh: { type: "number", nullable: true },
+            demand_mw:            { type: "number", nullable: true },
+            summary:              snapshotSummarySchema,
+            emissions:            snapshotEmissionsSchema,
+            generation:           { type: "array", items: snapshotGenerationItemSchema },
+            loads:                { type: "array", items: snapshotGenerationItemSchema },
+            curtailment:          { type: "array", items: snapshotCurtailmentItemSchema },
+          },
+        },
+      ),
+      401: errorResponse("Missing or invalid API key"),
+      404: errorResponse("Unknown or unavailable region"),
+      503: errorResponse("Cache not yet warm"),
+    },
+  },
+  }, async (request, reply) => {
     const params = request.params as { region: string };
 
     if (!VALID_REGIONS.has(params.region)) {
@@ -197,7 +256,34 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     );
   });
 
-  fastify.get("/v1/live/price", async (_request, reply) => {
+  fastify.get("/v1/live/price", {
+    schema: {
+      summary: "Live price and demand across all regions",
+      description: "Returns the current spot price ($/MWh) and demand (MW) for every available region across all networks.",
+      tags: ["Live Data"],
+      response: {
+        200: envelopeResponse(
+          "Price and demand for all regions",
+          "live_price_snapshot",
+          "regional_price_snapshot",
+          {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                network:              { type: "string", enum: ["NEM", "WEM"] },
+                region:               { type: "string", example: "NSW1" },
+                price_dollar_per_mwh: { type: "number", nullable: true },
+                demand_mw:            { type: "number", nullable: true },
+              },
+            },
+          },
+        ),
+        401: errorResponse("Missing or invalid API key"),
+        503: errorResponse("Cache not yet warm"),
+      },
+    },
+  }, async (_request, reply) => {
     if (!latestSnapshot || Object.keys(latestSnapshot).length === 0) {
       return reply.code(503).send({ success: false, error: "Cache not yet warm" });
     }
@@ -218,7 +304,52 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     });
   });
 
-  fastify.get("/v1/stats", async (request, reply) => {
+  fastify.get("/v1/stats", {
+    schema: {
+      summary: "Aggregated network statistics over a time range",
+      description: "Returns min/max statistics for demand, renewables percentage, and price. Note: 24h range is not supported — use /v1/history instead.",
+      tags: ["Historical Data"],
+      querystring: {
+        type: "object",
+        properties: {
+          network: {
+            type: "string",
+            enum: ["NEM", "WEM"],
+            default: "NEM",
+            description: "Network to query",
+          },
+          range: {
+            type: "string",
+            enum: ["7d", "30d", "90d"],
+            default: "7d",
+            description: "Time range (24h not supported for stats)",
+          },
+          region: {
+            type: "string",
+            enum: ["NSW1", "QLD1", "VIC1", "SA1", "TAS1", "WEM"],
+            description: "Optional — filter to a specific region",
+          },
+        },
+      },
+      response: {
+        200: envelopeResponse(
+          "Network statistics",
+          "range_statistics",
+          "statistics_summary",
+          {
+            type: "object",
+            properties: {
+              demand_mw:      rangeStatSchema,
+              renewables_pct: rangeStatSchema,
+              price:          rangeStatSchema,
+            },
+          },
+        ),
+        400: errorResponse("Invalid query params"),
+        401: errorResponse("Missing or invalid API key"),
+      },
+    },
+  }, async (request, reply) => {
     const query = request.query as { range?: "7d" | "30d" | "90d" | "24h"; network?: NetworkCode; region?: string };
     const range = query.range ?? "7d";
     const network = query.network ?? "NEM";
@@ -235,7 +366,63 @@ const restRoutes: FastifyPluginAsync = async (fastify) => {
     });
   });
 
-  fastify.get("/v1/history", async (request, reply) => {
+  fastify.get("/v1/history", {
+    schema: {
+      summary: "Time series history for a specific metric",
+      description: "Returns a time series array for the requested metric, aggregated at the specified interval over the given range. Optionally filter by region or fuel technology.",
+      tags: ["Historical Data"],
+      querystring: {
+        type: "object",
+        properties: {
+          metric: {
+            type: "string",
+            description: "The metric to retrieve (required). Values: generation_mw, price, emissions_volume, emission_intensity, demand_mw, renewables_pct",
+          },
+          interval: {
+            type: "string",
+            default: "1h",
+            description: "Aggregation interval. Values: 5m, 1h, 1d",
+          },
+          range: {
+            type: "string",
+            default: "7d",
+            description: "Time window to query. Values: 24h, 7d, 30d, 90d",
+          },
+          network: {
+            type: "string",
+            default: "NEM",
+            description: "Network to query. Values: NEM, WEM",
+          },
+          region: {
+            type: "string",
+            description: "Optional — filter to a specific region. Values: NSW1, QLD1, VIC1, SA1, TAS1, WEM",
+          },
+          fueltech: {
+            type: "string",
+            description: "Optional — filter by fuel technology e.g. solar, wind, coal, gas_ccgt",
+          },
+        },
+      },
+      response: {
+        200: envelopeResponse(
+          "Time series data",
+          "historical_series",
+          "history_series",
+          {
+            type: "object",
+            properties: {
+              metric:   { type: "string", example: "price" },
+              interval: { type: "string", example: "1h" },
+              range:    { type: "string", example: "7d" },
+              series:   { type: "array", items: historyPointSchema },
+            },
+          },
+        ),
+        400: errorResponse("Invalid query params — metric is required"),
+        401: errorResponse("Missing or invalid API key"),
+      },
+    },
+  }, async (request, reply) => {
     const query = request.query as Partial<HistoryQueryParams>;
     const metric = query.metric;
     const interval = query.interval ?? "1h";
