@@ -35,6 +35,7 @@ jobs:
       # ✅ Upload to Codecov
       - uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
@@ -43,14 +44,14 @@ jobs:
         continue-on-error: true
 
       # ✅ Rename PDF dynamically
-      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+      - run: mv report.pdf report-${{ github.run_id }}.pdf
 
       # ✅ Upload PDF artifact
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-report-${{ github.ref_name }}
-          path: report-${{ github.ref_name }}.pdf
+          name: test-report-${{ github.run_id }}
+          path: report-${{ github.run_id }}.pdf
 
 
   test-staging:
@@ -78,21 +79,22 @@ jobs:
 
       - uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
       - run: npm run generate:report
         continue-on-error: true
-      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+      - run: mv report.pdf report-${{ github.run_id }}.pdf
 
 
-      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+      - run: mv report.pdf report-${{ github.run_id }}.pdf
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-report-${{ github.ref_name }}
-          path: report-${{ github.ref_name }}.pdf
+          name: test-report-${{ github.run_id }}
+          path: report-${{ github.run_id }}.pdf
 
 
   test-production:
@@ -120,16 +122,17 @@ jobs:
 
       - uses: codecov/codecov-action@v4
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
       - run: npm run generate:report
         continue-on-error: true
 
-      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+      - run: mv report.pdf report-${{ github.run_id }}.pdf
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-report-${{ github.ref_name }}
-          path: report-${{ github.ref_name }}.pdf
+          name: test-report-${{ github.run_id }}
+          path: report-${{ github.run_id }}.pdf
