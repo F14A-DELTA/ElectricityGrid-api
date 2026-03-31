@@ -6,12 +6,20 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/src/index.js",
+
     "backfill:raw": "node -r dotenv/config dist/scripts/backfill-raw.js",
     "backfill:rollups": "node -r dotenv/config dist/scripts/build-rollups-local.js",
     "backfill:upload": "node -r dotenv/config dist/scripts/upload-backfill.js",
+
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+
+    "lint": "eslint . -f json -o lint-report.json",
+
+    "generate:report": "node scripts/generate-report.js",
+    "report:pdf": "markdown-pdf report.md",
+
     "swagger:generate": "npx tsc && node dist/src/generate-swagger.js"
   },
   "keywords": [],
@@ -30,6 +38,8 @@
   "devDependencies": {
     "@types/node": "^24.5.2",
     "@vitest/coverage-v8": "^3.2.4",
+    "eslint": "^9.10.0",
+    "markdown-pdf": "^11.0.0",
     "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   }
