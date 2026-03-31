@@ -15,7 +15,6 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . -f json -o lint-report.json",
     "generate:report": "node scripts/generate-report.js",
-    "report:pdf": "markdown-pdf report.md",
     "swagger:generate": "npx tsc && node dist/src/generate-swagger.js"
   },
   "keywords": [],
@@ -40,6 +39,7 @@
     "eslint": "^9.39.4",
     "jest-junit": "^16.0.0",
     "markdown-pdf": "^11.0.0",
+    "pdfkit": "^0.18.0",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.58.0",
     "vitest": "^3.2.4"

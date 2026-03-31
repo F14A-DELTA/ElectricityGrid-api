@@ -23,7 +23,17 @@ export default [
     },
   },
 
-  // Relax rules for test files
+  // Node globals for scripts
+  {
+    files: ["scripts/**/*.js"],
+    languageOptions: {
+      globals: {
+        process: "readonly",
+        console: "readonly",
+      },
+    },
+  },
+
   {
     files: ["**/*.test.ts", "**/*.spec.ts"],
     rules: {
