@@ -19,18 +19,39 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
       - run: npm ci
+
+      # ✅ Run tests + coverage + lint
       - run: npm test
       - run: npm run test:coverage
+      - run: npm run lint
+
+      # ✅ Upload to Codecov
+      - uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+      # ✅ Generate PDF report
+      - run: npm run generate:report
+      - run: npm run report:pdf
+
+      # ✅ Rename PDF dynamically
+      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+
+      # ✅ Upload PDF artifact
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-dev
-          path: coverage
+          name: test-report-${{ github.ref_name }}
+          path: report-${{ github.ref_name }}.pdf
+
 
   test-staging:
     name: Staging Validation
@@ -43,18 +64,34 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
       - run: npm ci
+
       - run: npm test
       - run: npm run test:coverage
+      - run: npm run lint
+
+      - uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+      - run: npm run generate:report
+      - run: npm run report:pdf
+
+      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-staging
-          path: coverage
+          name: test-report-${{ github.ref_name }}
+          path: report-${{ github.ref_name }}.pdf
+
 
   test-production:
     name: Production Validation
@@ -67,15 +104,30 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+
       - run: npm ci
+
       - run: npm test
       - run: npm run test:coverage
+      - run: npm run lint
+
+      - uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/lcov.info
+          fail_ci_if_error: true
+
+      - run: npm run generate:report
+      - run: npm run report:pdf
+
+      - run: mv report.pdf report-${{ github.ref_name }}.pdf
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: coverage-production
-          path: coverage
+          name: test-report-${{ github.ref_name }}
+          path: report-${{ github.ref_name }}.pdf
