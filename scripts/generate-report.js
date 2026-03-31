@@ -10,7 +10,7 @@ const lintReport = fs.existsSync("lint-report.json")
   ? (() => {
       const raw = JSON.parse(fs.readFileSync("lint-report.json", "utf-8"));
       const errors = raw.filter((f) => f.errorCount > 0);
-      if (errors.length === 0) return "✅ No lint errors found.";
+      if (errors.length === 0) return "No lint errors found.";
       return errors
         .map((f) => {
           const short = f.filePath.replace(process.cwd(), "");
@@ -35,38 +35,54 @@ const coverageText = coverageSummary
   : "No coverage data found";
 
 // --- Build PDF ---
-const doc = new PDFDocument({ margin: 50 });
+const doc = new PDFDocument({ margin: 50, autoFirstPage: true });
 doc.pipe(fs.createWriteStream("report.pdf"));
 
+const CONTENT_WIDTH = doc.page.width - 100; // 50px margin each side
+
 const heading = (text) => {
-  doc.moveDown(0.5)
-     .fontSize(16).fillColor("#1a1a1a").font("Helvetica-Bold").text(text)
+  doc.moveDown(1)
+     .font("Helvetica-Bold")
+     .fontSize(14)
+     .fillColor("#1a1a1a")
+     .text(text)
      .moveDown(0.3);
 };
 
 const codeBlock = (text) => {
-  doc.rect(doc.x, doc.y, 495, doc.heightOfString(text, { width: 475 }) + 16)
-     .fill("#f5f5f5");
-  doc.fillColor("#222").font("Courier").fontSize(8)
-     .text(text, doc.x + 8, doc.y - doc.heightOfString(text, { width: 475 }) - 16 + 8, { width: 475, lineGap: 2 });
+  // eslint-disable-next-line no-control-regex
+  const sanitised = text.replace(new RegExp("[\\u0000-\\u0008\\u000B\\u000C\\u000E-\\u001F]", "g"), "");
+  doc.font("Courier")
+     .fontSize(8)
+     .fillColor("#222222")
+     .text(sanitised, {
+       width: CONTENT_WIDTH,
+       lineGap: 2,
+     });
   doc.moveDown(0.5);
 };
 
 // Title
-doc.fontSize(22).fillColor("#000").font("Helvetica-Bold")
+doc.font("Helvetica-Bold")
+   .fontSize(22)
+   .fillColor("#000000")
    .text("CI Test Report", { align: "center" });
-doc.fontSize(10).fillColor("#666").font("Helvetica")
+
+doc.font("Helvetica")
+   .fontSize(10)
+   .fillColor("#666666")
    .text(`Generated: ${new Date().toUTCString()}`, { align: "center" });
+
 doc.moveDown(1);
 
 heading("Test Results");
-codeBlock(testReport.slice(0, 3000)); // JUnit XML can be long, truncate safely
+codeBlock(testReport.slice(0, 4000));
 
 heading("Coverage Summary");
 codeBlock(coverageText);
 
 heading("Lint Results");
-codeBlock(lintReport.slice(0, 3000));
+codeBlock(lintReport.slice(0, 4000));
 
 doc.end();
 console.log("report.pdf written");
