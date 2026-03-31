@@ -1,4 +1,4 @@
-const fs = require("fs");
+import fs from "fs";
 
 const testReport = fs.existsSync("junit.xml")
   ? fs.readFileSync("junit.xml", "utf-8")
