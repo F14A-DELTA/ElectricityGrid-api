@@ -1,71 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="19" failures="1" errors="0" time="0.056851625">
-    <testsuite name="src/tests/e2e/api.e2e.test.ts" timestamp="2026-04-01T04:21:03.475Z" hostname="Chengs-MacBook-Pro-2.local" tests="19" failures="1" errors="0" skipped="18" time="0.056851625">
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns 200 with ADAGE envelope" time="0">
-            <skipped/>
+<testsuites name="vitest tests" tests="18" failures="0" errors="0" time="5.280906792">
+    <testsuite name="src/tests/e2e/api.e2e.test.ts" timestamp="2026-04-01T06:34:37.707Z" hostname="Chengs-MacBook-Pro-2.local" tests="18" failures="0" errors="0" skipped="0" time="5.280906792">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns 200 with ADAGE envelope" time="0.564972209">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health works without auth header" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health works without auth header" time="0.432911792">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; health response has all required ADAGE fields" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; health response has all required ADAGE fields" time="0.256954375">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with no token" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with no token" time="0.216097209">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with wrong token" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with wrong token" time="0.216855375">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with malformed auth header" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with malformed auth header" time="0.215648042">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live returns ADAGE envelope" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live returns ADAGE envelope" time="0.222421542">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live?network=NEM returns 200 or 503" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live?network=NEM returns 200 or 503" time="0.254736917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live?network=INVALID returns 400" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live?network=INVALID returns 400" time="0.31411425">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live/region/NSW1 returns 200 or 503" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live/region/NSW1 returns 200 or 503" time="0.298621125">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live/region/INVALID returns 404" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live/region/INVALID returns 404" time="0.214797">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live/price returns 200 or 503" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Live endpoints &gt; GET /v1/live/price returns 200 or 503" time="0.216235459">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/stats?range=24h returns 400" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/stats?range=24h returns 400" time="0.214333">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/stats with valid params returns 200 or 400" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/stats with valid params returns 200 or 400" time="0.303131334">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/history without metric returns 400" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/history without metric returns 400" time="0.215234375">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/history with invalid interval returns 400" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/history with invalid interval returns 400" time="0.212408292">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/history with valid params returns 200 or 400" time="0">
-            <skipped/>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Historical endpoints &gt; GET /v1/history with valid params returns 200 or 400" time="0.692770834">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; includes CORS headers on responses" time="0">
-            <skipped/>
-        </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="src/tests/e2e/api.e2e.test.ts" time="0.056851625">
-            <failure message="Missing S3 bucket configuration. Set S3_BUCKET." type="Error">
-Error: Missing S3 bucket configuration. Set S3_BUCKET.
- ❯ requireBucket src/s3.ts:24:11
- ❯ getJson src/s3.ts:105:17
- ❯ src/s3.ts:150:40
- ❯ getJsonMany src/s3.ts:150:27
- ❯ src/cache.ts:44:31
- ❯ warmCache src/cache.ts:42:14
- ❯ src/tests/e2e/api.e2e.test.ts:19:9
-            </failure>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; includes CORS headers on responses" time="0.215147375">
         </testcase>
     </testsuite>
 </testsuites>
