@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="95" failures="0" errors="0" time="0.969075211">
-    <testsuite name="src/tests/auth.test.ts" timestamp="2026-04-01T00:32:14.772Z" hostname="Chengs-MacBook-Pro-2.local" tests="9" failures="0" errors="0" skipped="0" time="0.004447875">
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when API_KEY is missing" time="0.000877333">
+<testsuites name="vitest tests" tests="95" failures="0" errors="0" time="0.906928291">
+    <testsuite name="src/tests/auth.test.ts" timestamp="2026-04-01T02:03:29.491Z" hostname="Chengs-MacBook-Pro-2.local" tests="9" failures="0" errors="0" skipped="0" time="0.005724">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when API_KEY is missing" time="0.001079875">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when the header is missing" time="0.000103208">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when the header is missing" time="0.00011175">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when header is not Bearer format" time="0.000128875">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when header is not Bearer format" time="0.000134209">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when token is wrong" time="0.00036675">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when token is wrong" time="0.000728417">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns true when token is correct" time="0.000077375">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns true when token is correct" time="0.000104875">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; validateAuth &gt; returns true for a valid token" time="0.000099542">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; validateAuth &gt; returns true for a valid token" time="0.000107958">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; validateAuth &gt; returns false for an invalid token" time="0.000060375">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; validateAuth &gt; returns false for an invalid token" time="0.000064083">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; enforceAuth &gt; Sends 401 when request is not authorised" time="0.001302625">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; enforceAuth &gt; Sends 401 when request is not authorised" time="0.00171775">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; enforceAuth &gt; does not send 401 when request is authorized" time="0.000376708">
+        <testcase classname="src/tests/auth.test.ts" name="auth &gt; enforceAuth &gt; does not send 401 when request is authorized" time="0.000454875">
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/cache.test.ts" timestamp="2026-04-01T00:32:14.774Z" hostname="Chengs-MacBook-Pro-2.local" tests="4" failures="0" errors="0" skipped="0" time="0.037677375">
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; addToBuffer stores one snapshot and updates latestSnapshot" time="0.029465083">
+    <testsuite name="src/tests/cache.test.ts" timestamp="2026-04-01T02:03:29.492Z" hostname="Chengs-MacBook-Pro-2.local" tests="4" failures="0" errors="0" skipped="0" time="0.019054709">
+        <testcase classname="src/tests/cache.test.ts" name="cache &gt; addToBuffer stores one snapshot and updates latestSnapshot" time="0.008907458">
         </testcase>
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; getBufferSince returns only entries from the requested time" time="0.002458625">
+        <testcase classname="src/tests/cache.test.ts" name="cache &gt; getBufferSince returns only entries from the requested time" time="0.004795">
         </testcase>
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; trims entries older than 24 hours" time="0.001195916">
+        <testcase classname="src/tests/cache.test.ts" name="cache &gt; trims entries older than 24 hours" time="0.001883292">
         </testcase>
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; warmCache loads, sorts, filters nulls, and merges snapshots by timestamp" time="0.003896167">
+        <testcase classname="src/tests/cache.test.ts" name="cache &gt; warmCache loads, sorts, filters nulls, and merges snapshots by timestamp" time="0.002736542">
             <system-out>
 Warm cache loaded 1 entries for NEM.
 Warm cache loaded 2 entries for WEM.
@@ -35,40 +35,40 @@ Warm cache loaded 2 entries for WEM.
             </system-out>
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/index.test.ts" timestamp="2026-04-01T00:32:14.774Z" hostname="Chengs-MacBook-Pro-2.local" tests="2" failures="0" errors="0" skipped="0" time="0.095331209">
-        <testcase classname="src/tests/index.test.ts" name="index file tests &gt; starts app and wires dependencies when env is valid" time="0.089285167">
+    <testsuite name="src/tests/index.test.ts" timestamp="2026-04-01T02:03:29.494Z" hostname="Chengs-MacBook-Pro-2.local" tests="2" failures="0" errors="0" skipped="0" time="0.083135917">
+        <testcase classname="src/tests/index.test.ts" name="index file tests &gt; starts app and wires dependencies when env is valid" time="0.0703095">
         </testcase>
-        <testcase classname="src/tests/index.test.ts" name="index file tests &gt; exits when required env is missing" time="0.005458542">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/tests/normalise.test.ts" timestamp="2026-04-01T00:32:14.774Z" hostname="Chengs-MacBook-Pro-2.local" tests="8" failures="0" errors="0" skipped="0" time="0.006724334">
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; round, &gt; rounds numbers to requested decimals" time="0.000839958">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; round, &gt; returns null for null/undefined" time="0.000123083">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; builds network + region snapshots with correct aggregates" time="0.001743959">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; supports network region when the field is not there" time="0.000199583">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; uses datatable rows directly and falls back to DataTable parsing" time="0.001279708">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; returns empty latest intervals and uses latest source rows in buildSnapshot" time="0.000260542">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; handles unknown fueltech, zero generation, and missing market data" time="0.00018775">
-        </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; falls back to market or current time when generation timestamps are unavailable" time="0.001026459">
+        <testcase classname="src/tests/index.test.ts" name="index file tests &gt; exits when required env is missing" time="0.012232">
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/poller.test.ts" timestamp="2026-04-01T00:32:14.775Z" hostname="Chengs-MacBook-Pro-2.local" tests="4" failures="0" errors="0" skipped="0" time="0.084245125">
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; poll success: fetches, builds, caches, writes S3, emits event, updates lastPollAt" time="0.049562084">
+    <testsuite name="src/tests/normalise.test.ts" timestamp="2026-04-01T02:03:29.495Z" hostname="Chengs-MacBook-Pro-2.local" tests="8" failures="0" errors="0" skipped="0" time="0.008017958">
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; round, &gt; rounds numbers to requested decimals" time="0.0007715">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; round, &gt; returns null for null/undefined" time="0.00012075">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; builds network + region snapshots with correct aggregates" time="0.001507792">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; supports network region when the field is not there" time="0.000185708">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; uses datatable rows directly and falls back to DataTable parsing" time="0.0028345">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; returns empty latest intervals and uses latest source rows in buildSnapshot" time="0.000299708">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; handles unknown fueltech, zero generation, and missing market data" time="0.000207042">
+        </testcase>
+        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; falls back to market or current time when generation timestamps are unavailable" time="0.001126">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/tests/poller.test.ts" timestamp="2026-04-01T02:03:29.496Z" hostname="Chengs-MacBook-Pro-2.local" tests="4" failures="0" errors="0" skipped="0" time="0.060825292">
+        <testcase classname="src/tests/poller.test.ts" name="poller &gt; poll success: fetches, builds, caches, writes S3, emits event, updates lastPollAt" time="0.032133333">
             <system-out>
 Poll complete - NEM 100MW, 40% renewable. Duration: 0ms.
 
             </system-out>
         </testcase>
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; poll failure: logs error and skips cache/S3/update" time="0.017827667">
+        <testcase classname="src/tests/poller.test.ts" name="poller &gt; poll failure: logs error and skips cache/S3/update" time="0.005760666">
         </testcase>
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; startPoller uses configured POLL_INTERVAL_MS" time="0.012019917">
+        <testcase classname="src/tests/poller.test.ts" name="poller &gt; startPoller uses configured POLL_INTERVAL_MS" time="0.0133425">
             <system-err>
 Poll failed. TypeError: client.getNetworkData is not a function
     at poll [90m(/Users/cyrushycheng/seng3011/ElectricityGrid-api/[39msrc/poller.ts:34:14[90m)[39m
@@ -79,7 +79,7 @@ Poll failed. TypeError: client.getNetworkData is not a function
 
             </system-err>
         </testcase>
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; startPoller uses default interval (5 minutes) when env is missing" time="0.004209417">
+        <testcase classname="src/tests/poller.test.ts" name="poller &gt; startPoller uses default interval (5 minutes) when env is missing" time="0.008904958">
             <system-err>
 Poll failed. TypeError: client.getNetworkData is not a function
     at poll [90m(/Users/cyrushycheng/seng3011/ElectricityGrid-api/[39msrc/poller.ts:34:14[90m)[39m
@@ -91,154 +91,154 @@ Poll failed. TypeError: client.getNetworkData is not a function
             </system-err>
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/rest.test.ts" timestamp="2026-04-01T00:32:14.775Z" hostname="Chengs-MacBook-Pro-2.local" tests="9" failures="0" errors="0" skipped="0" time="0.163243125">
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/health works without auth and returns health payload" time="0.108536666">
+    <testsuite name="src/tests/rest.test.ts" timestamp="2026-04-01T02:03:29.497Z" hostname="Chengs-MacBook-Pro-2.local" tests="9" failures="0" errors="0" skipped="0" time="0.083617875">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/health works without auth and returns health payload" time="0.049513667">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; auth hook runs for protected routes" time="0.003866875">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; auth hook runs for protected routes" time="0.002978792">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live returns 503 when cache is empty" time="0.019626333">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live returns 503 when cache is empty" time="0.002728125">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live validates network query and returns 400/404/success" time="0.009567375">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live validates network query and returns 400/404/success" time="0.004957375">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live (no network) returns all snapshots" time="0.00528025">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live (no network) returns all snapshots" time="0.004815333">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live/region/:region handles invalid/empty/missing/success" time="0.0041745">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live/region/:region handles invalid/empty/missing/success" time="0.004095625">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live/price handles empty and success" time="0.00283975">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live/price handles empty and success" time="0.002787667">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/stats validates query and returns stats" time="0.004735416">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/stats validates query and returns stats" time="0.005667209">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/history validates query and returns series" time="0.003688875">
-        </testcase>
-    </testsuite>
-    <testsuite name="src/tests/s3-query.test.ts" timestamp="2026-04-01T00:32:14.776Z" hostname="Chengs-MacBook-Pro-2.local" tests="20" failures="0" errors="0" skipped="0" time="0.067682584">
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns sorted + deduped points" time="0.034226542">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer handles region + price metric" time="0.001910917">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer skips entries when network snapshot is missing" time="0.00181625">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns null for network price when no region price exists" time="0.001752917">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer covers region fueltech, average price, and summary fallback metrics" time="0.001498875">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns null for unsupported fueltech metrics" time="0.001069083">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer handles snapshot fueltech price, curtailment lookups, and invalid metrics" time="0.001237833">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer covers remaining region metric branches" time="0.00090225">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer falls back to region loads and curtailment for fueltech metrics" time="0.001570792">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to buffer for 24h/5m" time="0.001096459">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to hourly rollups for 7d" time="0.004631083">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to daily rollups for 30d/90d" time="0.004836125">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters rows and maps metric" time="0.000733542">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters by fueltech and maps generation fallback" time="0.0028755">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters out fueltech summary rows and maps demand/renewables/emissions metrics" time="0.001417792">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups returns null values for unsupported metrics" time="0.0015445">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readDailyRollups returns mapped daily points" time="0.001201792">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; computeStats returns min/max and ignores fueltech rows" time="0.000936375">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; computeStats returns null stats when no matching rows" time="0.00085925">
-        </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; getBufferSize returns recentBuffer length" time="0.000599167">
+        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/history validates query and returns series" time="0.005202709">
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/s3.test.ts" timestamp="2026-04-01T00:32:14.777Z" hostname="Chengs-MacBook-Pro-2.local" tests="15" failures="0" errors="0" skipped="0" time="0.032182667">
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds live keys" time="0.002096792">
+    <testsuite name="src/tests/s3-query.test.ts" timestamp="2026-04-01T02:03:29.498Z" hostname="Chengs-MacBook-Pro-2.local" tests="20" failures="0" errors="0" skipped="0" time="0.097348208">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns sorted + deduped points" time="0.045191125">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds raw and rollup keys" time="0.000857416">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer handles region + price metric" time="0.00219725">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds raw keys for a time range in 5-minute steps" time="0.000557958">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer skips entries when network snapshot is missing" time="0.001535792">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds hourly rollup keys for a range" time="0.000185">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns null for network price when no region price exists" time="0.001762417">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds daily rollup keys counting back from today" time="0.000220375">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer covers region fueltech, average price, and summary fallback metrics" time="0.001186792">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putJson writes json with cache-control" time="0.003215209">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns null for unsupported fueltech metrics" time="0.001356083">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putJson uses no-cache when maxAge is 0" time="0.002326125">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer handles snapshot fueltech price, curtailment lookups, and invalid metrics" time="0.003567458">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putNdjson writes newline-delimited json" time="0.002333708">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer covers remaining region metric branches" time="0.004579958">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJson parses object body" time="0.003996125">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer falls back to region loads and curtailment for fueltech metrics" time="0.005747792">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJson returns null for missing object" time="0.002608125">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to buffer for 24h/5m" time="0.002416916">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson returns [] for missing object" time="0.00209775">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to hourly rollups for 7d" time="0.003266">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson parses rows and ignores blank lines" time="0.002546916">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to daily rollups for 30d/90d" time="0.002694333">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson returns [] for missing object" time="0.003626833">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters rows and maps metric" time="0.008377166">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJsonMany and getNdjsonMany aggregate results" time="0.002095792">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters by fueltech and maps generation fallback" time="0.002365709">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; throws when bucket is missing" time="0.002574917">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters out fueltech summary rows and maps demand/renewables/emissions metrics" time="0.001874625">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/security.test.ts" timestamp="2026-04-01T00:32:14.778Z" hostname="Chengs-MacBook-Pro-2.local" tests="4" failures="0" errors="0" skipped="0" time="0.119021667">
-        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; handles malicious query parameters safely without 500 crashing" time="0.093020542">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups returns null values for unsupported metrics" time="0.001082541">
         </testcase>
-        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; rejects path traversal attempts" time="0.006847834">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readDailyRollups returns mapped daily points" time="0.001380167">
         </testcase>
-        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; handles extremely long input strings gracefully" time="0.009374583">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; computeStats returns min/max and ignores fueltech rows" time="0.002248167">
         </testcase>
-        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; drops requests trying to use unexpected HTTP methods" time="0.009024333">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; computeStats returns null stats when no matching rows" time="0.001509666">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/sse.test.ts" timestamp="2026-04-01T00:32:14.778Z" hostname="Chengs-MacBook-Pro-2.local" tests="2" failures="0" errors="0" skipped="0" time="0.006430125">
-        <testcase classname="src/tests/sse.test.ts" name="sse routes &gt; registers /v1/events and rejects unauthorized requests" time="0.00343125">
-        </testcase>
-        <testcase classname="src/tests/sse.test.ts" name="sse routes &gt; streams connected, update, and heartbeat events and cleans up on close" time="0.002442584">
+        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; getBufferSize returns recentBuffer length" time="0.001415791">
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/system.test.ts" timestamp="2026-04-01T00:32:14.778Z" hostname="Chengs-MacBook-Pro-2.local" tests="8" failures="0" errors="0" skipped="0" time="0.342240834">
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves health publicly and protects live endpoints with bearer auth" time="0.263578125">
+    <testsuite name="src/tests/s3.test.ts" timestamp="2026-04-01T02:03:29.501Z" hostname="Chengs-MacBook-Pro-2.local" tests="15" failures="0" errors="0" skipped="0" time="0.034066666">
+        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds live keys" time="0.001639375">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; returns live snapshots and region pricing from the real route stack" time="0.019188125">
+        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds raw and rollup keys" time="0.000816709">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves 24h history from the in-memory buffer using the real query code" time="0.01285725">
+        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds raw keys for a time range in 5-minute steps" time="0.0005415">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves historical rollups and computed stats through the real HTTP endpoints" time="0.009327291">
+        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds hourly rollup keys for a range" time="0.000180792">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; rejects invalid history queries" time="0.011541458">
+        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds daily rollup keys counting back from today" time="0.00022">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; uses default history query params when only metric is provided" time="0.008367542">
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putJson writes json with cache-control" time="0.002982458">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves region fueltech history from loads and curtailment fallback rows" time="0.007683791">
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putJson uses no-cache when maxAge is 0" time="0.002659125">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; rejects unauthorized SSE connections before opening a stream" time="0.008889625">
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putNdjson writes newline-delimited json" time="0.003296">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJson parses object body" time="0.002393791">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJson returns null for missing object" time="0.003634">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson returns [] for missing object" time="0.001997875">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson parses rows and ignores blank lines" time="0.00191375">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson returns [] for missing object" time="0.002075917">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJsonMany and getNdjsonMany aggregate results" time="0.004994709">
+        </testcase>
+        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; throws when bucket is missing" time="0.003869792">
         </testcase>
     </testsuite>
-    <testsuite name="src/tests/ws.test.ts" timestamp="2026-04-01T00:32:14.779Z" hostname="Chengs-MacBook-Pro-2.local" tests="10" failures="0" errors="0" skipped="0" time="0.009848291">
-        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; registers /v1/ws and blocks unauthorized in preValidation" time="0.001771291">
+    <testsuite name="src/tests/security.test.ts" timestamp="2026-04-01T02:03:29.503Z" hostname="Chengs-MacBook-Pro-2.local" tests="4" failures="0" errors="0" skipped="0" time="0.173067916">
+        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; handles malicious query parameters safely without 500 crashing" time="0.146050666">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; sends initial snapshot and handles invalid message" time="0.001542916">
+        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; rejects path traversal attempts" time="0.007173333">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; subscribes/unsubscribes and cleans up on close/error" time="0.000959417">
+        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; handles extremely long input strings gracefully" time="0.009548041">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; returns snapshots unchanged with empty subscriptions" time="0.000342791">
+        <testcase classname="src/tests/security.test.ts" name="Security Testing &gt; drops requests trying to use unexpected HTTP methods" time="0.009509666">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; filters by regions and recomputes aggregates" time="0.000122792">
+    </testsuite>
+    <testsuite name="src/tests/sse.test.ts" timestamp="2026-04-01T02:03:29.504Z" hostname="Chengs-MacBook-Pro-2.local" tests="2" failures="0" errors="0" skipped="0" time="0.012466">
+        <testcase classname="src/tests/sse.test.ts" name="sse routes &gt; registers /v1/events and rejects unauthorized requests" time="0.006720708">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; filters snapshots down to price-only metric subscriptions" time="0.000568167">
+        <testcase classname="src/tests/sse.test.ts" name="sse routes &gt; streams connected, update, and heartbeat events and cleans up on close" time="0.005215375">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; preserves emissions when only emissions metrics are subscribed" time="0.00026675">
+    </testsuite>
+    <testsuite name="src/tests/system.test.ts" timestamp="2026-04-01T02:03:29.504Z" hostname="Chengs-MacBook-Pro-2.local" tests="8" failures="0" errors="0" skipped="0" time="0.319415625">
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves health publicly and protects live endpoints with bearer auth" time="0.194391291">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; retains generation, renewables, demand, and emission intensity metrics when subscribed" time="0.000265917">
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; returns live snapshots and region pricing from the real route stack" time="0.019106375">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; handles zero-generation selected regions when recomputing proportions" time="0.000244417">
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves 24h history from the in-memory buffer using the real query code" time="0.027604667">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; merges duplicate load and curtailment fueltechs and preserves undefined regions" time="0.002781916">
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves historical rollups and computed stats through the real HTTP endpoints" time="0.015914458">
+        </testcase>
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; rejects invalid history queries" time="0.014376042">
+        </testcase>
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; uses default history query params when only metric is provided" time="0.010795167">
+        </testcase>
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves region fueltech history from loads and curtailment fallback rows" time="0.024776">
+        </testcase>
+        <testcase classname="src/tests/system.test.ts" name="system tests &gt; rejects unauthorized SSE connections before opening a stream" time="0.011643458">
+        </testcase>
+    </testsuite>
+    <testsuite name="src/tests/ws.test.ts" timestamp="2026-04-01T02:03:29.505Z" hostname="Chengs-MacBook-Pro-2.local" tests="10" failures="0" errors="0" skipped="0" time="0.010188125">
+        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; registers /v1/ws and blocks unauthorized in preValidation" time="0.002881709">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; sends initial snapshot and handles invalid message" time="0.001654792">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; subscribes/unsubscribes and cleans up on close/error" time="0.001234792">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; returns snapshots unchanged with empty subscriptions" time="0.000468458">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; filters by regions and recomputes aggregates" time="0.000157791">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; filters snapshots down to price-only metric subscriptions" time="0.000766667">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; preserves emissions when only emissions metrics are subscribed" time="0.000870584">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; retains generation, renewables, demand, and emission intensity metrics when subscribed" time="0.000331">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; handles zero-generation selected regions when recomputing proportions" time="0.000654042">
+        </testcase>
+        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; merges duplicate load and curtailment fueltechs and preserves undefined regions" time="0.000299417">
         </testcase>
     </testsuite>
 </testsuites>

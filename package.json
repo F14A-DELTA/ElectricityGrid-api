@@ -10,7 +10,7 @@
     "backfill:raw": "node -r dotenv/config dist/scripts/backfill-raw.js",
     "backfill:rollups": "node -r dotenv/config dist/scripts/build-rollups-local.js",
     "backfill:upload": "node -r dotenv/config dist/scripts/upload-backfill.js",
-    "test": "vitest run",
+    "test": "vitest run --exclude src/tests/e2e",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "vitest run src/tests/e2e",
