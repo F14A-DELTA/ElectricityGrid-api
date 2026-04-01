@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "vitest run src/tests/e2e",
     "lint": "eslint . -f json -o lint-report.json",
     "generate:report": "node scripts/generate-report.js",
     "swagger:generate": "npx tsc && node dist/src/generate-swagger.js"
