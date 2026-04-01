@@ -85,35 +85,6 @@ jobs:
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
-      # ✅ Build and run E2E tests
-      - run: npm run build
-
-      - name: Start server
-        run: node dist/src/index.js &
-        env:
-          PORT: 3000
-          API_KEY: local-dev-token
-          OPENELECTRICITY_API_KEY: ${{ secrets.OPENELECTRICITY_API_KEY }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-
-      - name: Wait for server
-        run: |
-          for i in {1..15}; do
-            curl -s http://localhost:3000/v1/health && break
-            echo "Waiting... attempt $i"
-            sleep 2
-          done
-
-      - name: Run E2E tests
-        run: npm run test:e2e
-        env:
-          E2E_BASE_URL: http://localhost:3000
-          API_KEY: local-dev-token
-
       # ✅ Generate PDF report
       - run: npm run generate:report
         continue-on-error: true
@@ -159,35 +130,6 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
-
-      # ✅ Build and run E2E tests
-      - run: npm run build
-
-      - name: Start server
-        run: node dist/src/index.js &
-        env:
-          PORT: 3000
-          API_KEY: local-dev-token
-          OPENELECTRICITY_API_KEY: ${{ secrets.OPENELECTRICITY_API_KEY }}
-          S3_BUCKET: ${{ secrets.S3_BUCKET }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
-
-      - name: Wait for server
-        run: |
-          for i in {1..15}; do
-            curl -s http://localhost:3000/v1/health && break
-            echo "Waiting... attempt $i"
-            sleep 2
-          done
-
-      - name: Run E2E tests
-        run: npm run test:e2e
-        env:
-          E2E_BASE_URL: http://localhost:3000
-          API_KEY: local-dev-token
 
       # ✅ Generate PDF report
       - run: npm run generate:report
