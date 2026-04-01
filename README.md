@@ -1,5 +1,21 @@
 API service for Australian electricity market data.
 
+A RESTful microservice for accessing, processing, and visualising Australian electricity grid data.
+
+## Overview
+
+This service provides real-time and historical electricity market data through a standardised API. It is designed to support analytics, visualisation tools, and integration with downstream services such as prediction models.
+
+## Features
+
+- Live electricity grid data endpoints
+- Historical time-series data access
+- Secure API key authentication
+- Dockerised deployment for portability
+- Health monitoring endpoint
+
+## Getting Started
+
 ## Run With Docker
 
 Build the image:
