@@ -1,14 +1,13 @@
 import "dotenv/config";
-// import Fastify from "fastify";
-// import websocket from "@fastify/websocket";
-// import cors from "@fastify/cors";
+import Fastify from "fastify";
+import websocket from "@fastify/websocket";
+import cors from "@fastify/cors";
 
 import { warmCache } from "./cache";
 import { startPoller } from "./poller";
-// import restRoutes from "./routes/rest";
-// import sseRoutes from "./routes/sse";
-// import wsRoutes from "./routes/ws";
-import { buildApp } from "./app";
+import restRoutes from "./routes/rest";
+import sseRoutes from "./routes/sse";
+import wsRoutes from "./routes/ws";
 
 function getRequiredEnv(name: string, fallbacks: string[] = []): string {
   const value = process.env[name] ?? fallbacks.map((fallback) => process.env[fallback]).find((candidate) => candidate);
@@ -26,7 +25,18 @@ async function main(): Promise<void> {
   getRequiredEnv("API_KEY");
   const port = Number(getRequiredEnv("PORT"));
 
-  const fastify = await buildApp();
+  const fastify = Fastify({
+    logger: true,
+  });
+
+  await fastify.register(cors, {
+    origin: true,
+  });
+
+  await fastify.register(websocket);
+  await fastify.register(restRoutes);
+  await fastify.register(sseRoutes);
+  await fastify.register(wsRoutes);
 
   await warmCache(["NEM", "WEM"]);
   fastify.log.info("Warm cache completed.");

@@ -1,267 +1,267 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="131" failures="0" errors="0" time="44.70795">
-    <testsuite name="src/tests/e2e/api.e2e.test.ts" timestamp="2026-04-01T11:30:36.152Z" hostname="Chengs-MacBook-Pro-2.local" tests="131" failures="0" errors="0" skipped="0" time="44.70795">
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns 200" time="0.476712292">
+<testsuites name="vitest tests" tests="131" failures="0" errors="0" time="44.646724917">
+    <testsuite name="src/tests/e2e/api.e2e.test.ts" timestamp="2026-04-01T11:47:14.049Z" hostname="Chengs-MacBook-Pro-2.local" tests="131" failures="0" errors="0" skipped="0" time="44.646724917">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns 200" time="0.573034917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health does not require an Authorization header" time="0.436630333">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health does not require an Authorization header" time="0.604855">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns a valid ADAGE envelope" time="0.22640525">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns a valid ADAGE envelope" time="0.218596458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns dataset_type of &apos;health_status&apos;" time="0.218331791">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns dataset_type of &apos;health_status&apos;" time="0.294712834">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health event_type is &apos;health_check&apos;" time="0.287312333">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health event_type is &apos;health_check&apos;" time="0.215403417">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.status is &apos;ok&apos;" time="0.223463875">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.status is &apos;ok&apos;" time="0.213389541">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.uptime is a non-negative number" time="0.219806625">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.uptime is a non-negative number" time="0.2182525">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.buffer_size is a non-negative integer" time="0.218191417">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.buffer_size is a non-negative integer" time="0.217661167">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.last_poll_at is null or a valid ISO timestamp" time="0.228864416">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.last_poll_at is null or a valid ISO timestamp" time="0.22584575">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health time_object.timestamp is a valid ISO timestamp" time="0.218022916">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health time_object.timestamp is a valid ISO timestamp" time="0.218733041">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with no Authorization header" time="0.3182645">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with no Authorization header" time="0.326211625">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; 401 response body has success: false" time="0.220948542">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; 401 response body has success: false" time="0.307831833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; 401 response body has error: &apos;Unauthorized&apos;" time="0.292642584">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; 401 response body has error: &apos;Unauthorized&apos;" time="0.308211708">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with an incorrect token" time="0.30082875">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with an incorrect token" time="0.217337167">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 when the Bearer prefix is missing" time="0.307663292">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 when the Bearer prefix is missing" time="0.218786667">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 when the auth scheme is not &apos;Bearer&apos;" time="0.306491042">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 when the auth scheme is not &apos;Bearer&apos;" time="0.216130416">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with a completely malformed Authorization header" time="0.307703541">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with a completely malformed Authorization header" time="0.216044166">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with an empty Authorization header value" time="0.307425375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with an empty Authorization header value" time="0.251450875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/stats enforces auth" time="0.307966334">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/stats enforces auth" time="0.315316458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/history enforces auth" time="0.216793">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/history enforces auth" time="0.298255041">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/live/region/NSW1 enforces auth" time="0.218945083">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/live/region/NSW1 enforces auth" time="0.216238416">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/live/price enforces auth" time="0.218936917">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/live/price enforces auth" time="0.296100667">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; returns 200 or 503" time="0.221407292">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; returns 200 or 503" time="0.219811583">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response is a valid ADAGE envelope" time="0.221590417">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response is a valid ADAGE envelope" time="0.297407542">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response dataset_type is &apos;live_snapshot_collection&apos;" time="0.233490792">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response dataset_type is &apos;live_snapshot_collection&apos;" time="0.218523334">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response event_type is &apos;snapshot_collection&apos;" time="0.309129542">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response event_type is &apos;snapshot_collection&apos;" time="0.288121167">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 503 response body has success: false and an error message" time="0.219168583">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 503 response body has success: false and an error message" time="0.3099595">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM returns 200 or 503" time="0.223548625">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM returns 200 or 503" time="0.303626125">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=WEM returns 200 or 503" time="0.269731">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=WEM returns 200 or 503" time="0.305709291">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM 200 response dataset_type is &apos;live_snapshot&apos;" time="0.306819041">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM 200 response dataset_type is &apos;live_snapshot&apos;" time="0.311794667">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM 200 response event_type is &apos;network_snapshot&apos;" time="0.308368208">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM 200 response event_type is &apos;network_snapshot&apos;" time="0.30344525">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID returns 400" time="0.304897166">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID returns 400" time="0.308494708">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID response body has success: false" time="0.220562833">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID response body has success: false" time="0.303024292">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID response body has error: &apos;Invalid network&apos;" time="0.217269375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID response body has error: &apos;Invalid network&apos;" time="0.310355917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=nem (lowercase) returns 400 — network codes are case-sensitive" time="0.275410459">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=nem (lowercase) returns 400 — network codes are case-sensitive" time="0.305645666">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 returns 200 or 503" time="0.217332959">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 returns 200 or 503" time="0.305221375">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response has attribute.region === &apos;NSW1&apos;" time="0.220394584">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response has attribute.region === &apos;NSW1&apos;" time="0.308426959">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response has attribute.network set" time="0.280969375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response has attribute.network set" time="0.303748">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.30708325">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.306709833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 returns 200 or 503" time="0.221583583">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 returns 200 or 503" time="0.298080958">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response has attribute.region === &apos;QLD1&apos;" time="0.225655666">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response has attribute.region === &apos;QLD1&apos;" time="0.215138292">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response has attribute.network set" time="0.268145334">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response has attribute.network set" time="0.214370708">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.305116667">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.213804208">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 returns 200 or 503" time="0.217315583">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 returns 200 or 503" time="0.284812167">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response has attribute.region === &apos;VIC1&apos;" time="0.214410125">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response has attribute.region === &apos;VIC1&apos;" time="0.308511208">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response has attribute.network set" time="0.218155083">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response has attribute.network set" time="0.217109334">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.236164958">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.297527917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 returns 200 or 503" time="0.215655209">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 returns 200 or 503" time="0.304939333">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response has attribute.region === &apos;SA1&apos;" time="0.217730208">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response has attribute.region === &apos;SA1&apos;" time="0.303676875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response has attribute.network set" time="0.22014525">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response has attribute.network set" time="0.215730208">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.218951458">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.217943208">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 returns 200 or 503" time="0.287107583">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 returns 200 or 503" time="0.26745075">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response has attribute.region === &apos;TAS1&apos;" time="0.30783075">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response has attribute.region === &apos;TAS1&apos;" time="0.220450333">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response has attribute.network set" time="0.305498083">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response has attribute.network set" time="0.309360333">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.303674125">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.305305458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM returns 200 or 503" time="0.217278125">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM returns 200 or 503" time="0.217168625">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response has attribute.region === &apos;WEM&apos;" time="0.296452042">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response has attribute.region === &apos;WEM&apos;" time="0.216345042">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response has attribute.network set" time="0.215314959">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response has attribute.network set" time="0.216648459">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.297237584">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.216946">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/INVALID returns 404" time="0.216427125">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/INVALID returns 404" time="0.224254542">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/INVALID response body error is &apos;Unknown region&apos;" time="0.399594208">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/INVALID response body error is &apos;Unknown region&apos;" time="0.2382535">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/nsw1 returns 404" time="0.21599475">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/nsw1 returns 404" time="0.301743958">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/nsw1 response body error is &apos;Unknown region&apos;" time="0.292764667">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/nsw1 response body error is &apos;Unknown region&apos;" time="0.259822">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW returns 404" time="0.2164505">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW returns 404" time="0.215426833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW response body error is &apos;Unknown region&apos;" time="0.214887542">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW response body error is &apos;Unknown region&apos;" time="0.217441125">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/AU1 returns 404" time="0.285631208">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/AU1 returns 404" time="0.229631875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/AU1 response body error is &apos;Unknown region&apos;" time="0.216261791">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/AU1 response body error is &apos;Unknown region&apos;" time="0.304977792">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/(empty string) returns 404" time="0.21883575">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/(empty string) returns 404" time="0.306851458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/(empty string) response body error is &apos;Unknown region&apos;" time="0.2806725">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/(empty string) response body error is &apos;Unknown region&apos;" time="0.307202375">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; 200 response includes attribute.updated_at as a valid ISO timestamp" time="0.309010125">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; 200 response includes attribute.updated_at as a valid ISO timestamp" time="0.213940458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; 200 response is a valid ADAGE envelope" time="0.304589375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; 200 response is a valid ADAGE envelope" time="0.217400166">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; returns 200 or 503" time="0.306442834">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; returns 200 or 503" time="0.218654833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response is a valid ADAGE envelope" time="0.306057667">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response is a valid ADAGE envelope" time="0.217802791">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response dataset_type is &apos;live_price_snapshot&apos;" time="0.214774375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response dataset_type is &apos;live_price_snapshot&apos;" time="0.220731875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response event_type is &apos;regional_price_snapshot&apos;" time="0.217084375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response event_type is &apos;regional_price_snapshot&apos;" time="0.243931208">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response attribute is an array of price entries" time="0.2828105">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response attribute is an array of price entries" time="0.306048917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response each price entry has network, region, price_dollar_per_mwh, demand_mw" time="0.311354292">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response each price entry has network, region, price_dollar_per_mwh, demand_mw" time="0.307743792">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 503 response has success: false and error: &apos;Cache not yet warm&apos;" time="0.216642292">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 503 response has success: false and error: &apos;Cache not yet warm&apos;" time="0.304790458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h returns 400" time="0.218387375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h returns 400" time="0.307605333">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h response body has success: false" time="0.218270375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h response body has success: false" time="0.307604791">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h response body error is &apos;Invalid stats query&apos;" time="0.219860833">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h response body error is &apos;Invalid stats query&apos;" time="0.30346425">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=1h returns 400" time="0.3491595">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=1h returns 400" time="0.213616875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=1y returns 400" time="0.3052525">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=1y returns 400" time="0.301791">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=INVALID&amp;range=7d returns 400" time="0.307757625">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=INVALID&amp;range=7d returns 400" time="0.218399334">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d returns 200 or 400" time="0.308813792">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d returns 200 or 400" time="0.324051">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response is a valid ADAGE envelope" time="0.305894791">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response is a valid ADAGE envelope" time="0.304299084">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response dataset_type is &apos;range_statistics&apos;" time="0.307536375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response dataset_type is &apos;range_statistics&apos;" time="0.238371875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response event_type is &apos;statistics_summary&apos;" time="0.306408">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response event_type is &apos;statistics_summary&apos;" time="0.272412834">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d returns 200 or 400" time="0.397248208">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d returns 200 or 400" time="0.44380675">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response is a valid ADAGE envelope" time="0.320210458">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response is a valid ADAGE envelope" time="0.276462416">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response dataset_type is &apos;range_statistics&apos;" time="0.3055465">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response dataset_type is &apos;range_statistics&apos;" time="0.303909458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response event_type is &apos;statistics_summary&apos;" time="0.316722291">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response event_type is &apos;statistics_summary&apos;" time="0.290284625">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d returns 200 or 400" time="0.604074209">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d returns 200 or 400" time="0.4614585">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response is a valid ADAGE envelope" time="0.437006916">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response is a valid ADAGE envelope" time="0.44478625">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response dataset_type is &apos;range_statistics&apos;" time="0.393832833">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response dataset_type is &apos;range_statistics&apos;" time="0.433472833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response event_type is &apos;statistics_summary&apos;" time="0.443033416">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response event_type is &apos;statistics_summary&apos;" time="0.424816917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; defaults to network=NEM and range=7d when no query params provided" time="0.613333959">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; defaults to network=NEM and range=7d when no query params provided" time="0.573888041">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; no query params returns 400" time="0.260753917">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; no query params returns 400" time="0.213208875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; no query params error is &apos;Invalid history query&apos;" time="0.217876875">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; no query params error is &apos;Invalid history query&apos;" time="0.213252041">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; missing metric returns 400" time="0.2931365">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; missing metric returns 400" time="0.216233375">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; unknown metric returns 400" time="0.305768">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; unknown metric returns 400" time="0.272644792">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid interval &apos;2h&apos; returns 400" time="0.410805459">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid interval &apos;2h&apos; returns 400" time="0.2152155">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid interval &apos;30m&apos; returns 400" time="0.217641667">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid interval &apos;30m&apos; returns 400" time="0.222859125">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid network returns 400" time="0.291555792">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid network returns 400" time="0.222409708">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=generation_mw with valid params returns 200 or 400" time="0.616203833">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=generation_mw with valid params returns 200 or 400" time="0.658288917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=generation_mw 200 response attribute.metric equals &apos;generation_mw&apos;" time="0.550897625">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=generation_mw 200 response attribute.metric equals &apos;generation_mw&apos;" time="0.529153541">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=price with valid params returns 200 or 400" time="0.573773916">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=price with valid params returns 200 or 400" time="0.561510959">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=price 200 response attribute.metric equals &apos;price&apos;" time="0.454866125">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=price 200 response attribute.metric equals &apos;price&apos;" time="0.512904833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emissions_volume with valid params returns 200 or 400" time="0.492640333">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emissions_volume with valid params returns 200 or 400" time="0.462980791">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emissions_volume 200 response attribute.metric equals &apos;emissions_volume&apos;" time="0.49836325">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emissions_volume 200 response attribute.metric equals &apos;emissions_volume&apos;" time="0.611239834">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emission_intensity with valid params returns 200 or 400" time="0.437139">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emission_intensity with valid params returns 200 or 400" time="0.613349625">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emission_intensity 200 response attribute.metric equals &apos;emission_intensity&apos;" time="0.572219209">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emission_intensity 200 response attribute.metric equals &apos;emission_intensity&apos;" time="0.440799958">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=demand_mw with valid params returns 200 or 400" time="0.430664958">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=demand_mw with valid params returns 200 or 400" time="0.687696209">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=demand_mw 200 response attribute.metric equals &apos;demand_mw&apos;" time="0.590547334">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=demand_mw 200 response attribute.metric equals &apos;demand_mw&apos;" time="0.481023833">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=renewables_pct with valid params returns 200 or 400" time="0.479604208">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=renewables_pct with valid params returns 200 or 400" time="0.539616708">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=renewables_pct 200 response attribute.metric equals &apos;renewables_pct&apos;" time="0.434203875">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=renewables_pct 200 response attribute.metric equals &apos;renewables_pct&apos;" time="0.454867458">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=5m with valid params returns 200 or 400" time="3.492506417">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=5m with valid params returns 200 or 400" time="3.488704">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=1h with valid params returns 200 or 400" time="0.507839209">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=1h with valid params returns 200 or 400" time="0.500882791">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=1d with valid params returns 200 or 400" time="0.482246875">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=1d with valid params returns 200 or 400" time="0.512136625">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response is a valid ADAGE envelope" time="0.545267334">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response is a valid ADAGE envelope" time="0.472931708">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response dataset_type is &apos;historical_series&apos;" time="0.56432225">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response dataset_type is &apos;historical_series&apos;" time="0.490742542">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response event_type is &apos;history_series&apos;" time="0.559878417">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response event_type is &apos;history_series&apos;" time="0.529589792">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.series is an array" time="0.473953916">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.series is an array" time="0.501330875">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.interval matches the requested interval" time="0.548046167">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.interval matches the requested interval" time="0.558591917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.range matches the requested range" time="0.474424541">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.range matches the requested range" time="0.444705834">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; GET /v1/health includes access-control-allow-origin" time="0.241530459">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; GET /v1/health includes access-control-allow-origin" time="0.231978792">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; GET /v1/live includes access-control-allow-origin" time="0.306779291">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; GET /v1/live includes access-control-allow-origin" time="0.308245">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; preflight OPTIONS /v1/live returns 200 or 204" time="0.30550825">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; preflight OPTIONS /v1/live returns 200 or 204" time="0.216113917">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; GET /v1/health response Content-Type is application/json" time="0.306760709">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; GET /v1/health response Content-Type is application/json" time="0.215357084">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; GET /v1/live response Content-Type is application/json" time="0.305828375">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; GET /v1/live response Content-Type is application/json" time="0.22062175">
         </testcase>
-        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; error responses also return application/json" time="0.2606155">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; error responses also return application/json" time="0.214674334">
         </testcase>
     </testsuite>
 </testsuites>
