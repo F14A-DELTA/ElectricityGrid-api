@@ -25,28 +25,51 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
-      # ✅ Run tests + coverage + lint
       - run: npm test
       - run: npm run test:coverage
       - run: npm run lint
 
-      # ✅ Upload to Codecov
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
-      # ✅ Generate PDF report
+      - run: npm run build
+
+      - name: Start server
+        run: node dist/src/index.js &
+        env:
+          PORT: 3000
+          API_KEY: local-dev-token
+          OPENELECTRICITY_API_KEY: ${{ secrets.OPENELECTRICITY_API_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Wait for server
+        run: |
+          for i in {1..15}; do
+            curl -s http://localhost:3000/v1/health && break
+            echo "Waiting... attempt $i"
+            sleep 2
+          done
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          E2E_BASE_URL: http://localhost:3000
+          API_KEY: local-dev-token
+
       - run: npm run generate:report
         continue-on-error: true
 
-      # ✅ Rename PDF dynamically
       - run: mv report.pdf report-${{ github.run_id }}.pdf
 
-      # ✅ Upload PDF artifact
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -71,7 +94,7 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
       - run: npm test
       - run: npm run test:coverage
@@ -83,10 +106,36 @@ jobs:
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
+      - run: npm run build
+
+      - name: Start server
+        run: node dist/src/index.js &
+        env:
+          PORT: 3000
+          API_KEY: local-dev-token
+          OPENELECTRICITY_API_KEY: ${{ secrets.OPENELECTRICITY_API_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Wait for server
+        run: |
+          for i in {1..15}; do
+            curl -s http://localhost:3000/v1/health && break
+            echo "Waiting... attempt $i"
+            sleep 2
+          done
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          E2E_BASE_URL: http://localhost:3000
+          API_KEY: local-dev-token
+
       - run: npm run generate:report
         continue-on-error: true
-      - run: mv report.pdf report-${{ github.run_id }}.pdf
-
 
       - run: mv report.pdf report-${{ github.run_id }}.pdf
 
@@ -114,7 +163,7 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - run: npm ci --ignore-scripts
 
       - run: npm test
       - run: npm run test:coverage
@@ -125,6 +174,34 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
+
+      - run: npm run build
+
+      - name: Start server
+        run: node dist/src/index.js &
+        env:
+          PORT: 3000
+          API_KEY: local-dev-token
+          OPENELECTRICITY_API_KEY: ${{ secrets.OPENELECTRICITY_API_KEY }}
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+
+      - name: Wait for server
+        run: |
+          for i in {1..15}; do
+            curl -s http://localhost:3000/v1/health && break
+            echo "Waiting... attempt $i"
+            sleep 2
+          done
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          E2E_BASE_URL: http://localhost:3000
+          API_KEY: local-dev-token
 
       - run: npm run generate:report
         continue-on-error: true
