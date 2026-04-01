@@ -1,8 +1,28 @@
-import { describe, it, expect } from "vitest";
+// import { describe, it, expect } from "vitest";
 
-const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
-const API_KEY = process.env.API_KEY ?? "local-dev-token";
-const AUTH = { Authorization: `Bearer ${API_KEY}` };
+// const BASE = process.env.E2E_BASE_URL ?? "http://localhost:3000";
+// const API_KEY = process.env.API_KEY ?? "local-dev-token";
+// const AUTH = { Authorization: `Bearer ${API_KEY}` };
+
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { buildApp } from "../../app";
+import { warmCache } from "../../cache";
+
+const PORT = 3999;
+const BASE = `http://localhost:${PORT}`;
+const AUTH = { Authorization: `Bearer ${process.env.API_KEY ?? "local-dev-token"}` };
+
+let server: Awaited<ReturnType<typeof buildApp>>;
+
+beforeAll(async () => {
+  server = await buildApp();
+  await warmCache(["NEM", "WEM"]);
+  await server.listen({ port: PORT, host: "0.0.0.0" });
+}, 60000); // 60s timeout to allow cache to warm
+
+afterAll(async () => {
+  await server.close();
+});
 
 describe("E2E — Health", () => {
   it("GET /v1/health returns 200 with ADAGE envelope", async () => {
