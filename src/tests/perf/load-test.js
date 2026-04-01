@@ -2,8 +2,8 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 
-const BASE_URL = __ENV.TARGET_URL || 'http://ec2-54-86-254-66.compute-1.amazonaws.com:3000';
-const API_KEY = __ENV.API_KEY || 'local-dev-token';
+const BASE_URL = 'http://ec2-54-86-254-66.compute-1.amazonaws.com:3000';
+const API_KEY = 'local-dev-token';
 
 
 export const options = {

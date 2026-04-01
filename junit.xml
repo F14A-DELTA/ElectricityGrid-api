@@ -1,234 +1,267 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="91" failures="0" errors="0" time="1.3558366">
-    <testsuite name="src/tests/auth.test.ts" timestamp="2026-03-31T05:12:42.715Z" hostname="DESKTOP-TU0EB1V" tests="9" failures="0" errors="0" skipped="0" time="0.0146695">
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when API_KEY is missing" time="0.0027993">
+<testsuites name="vitest tests" tests="131" failures="0" errors="0" time="44.646724917">
+    <testsuite name="src/tests/e2e/api.e2e.test.ts" timestamp="2026-04-01T11:47:14.049Z" hostname="Chengs-MacBook-Pro-2.local" tests="131" failures="0" errors="0" skipped="0" time="44.646724917">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns 200" time="0.573034917">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when the header is missing" time="0.0005235">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health does not require an Authorization header" time="0.604855">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when header is not Bearer format" time="0.0005781">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns a valid ADAGE envelope" time="0.218596458">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns false when token is wrong" time="0.001426">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health returns dataset_type of &apos;health_status&apos;" time="0.294712834">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; isAuthorised &gt; returns true when token is correct" time="0.0005069">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health event_type is &apos;health_check&apos;" time="0.215403417">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; validateAuth &gt; returns true for a valid token" time="0.0004088">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.status is &apos;ok&apos;" time="0.213389541">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; validateAuth &gt; returns false for an invalid token" time="0.0003412">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.uptime is a non-negative number" time="0.2182525">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; enforceAuth &gt; Sends 401 when request is not authorised" time="0.004677">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.buffer_size is a non-negative integer" time="0.217661167">
         </testcase>
-        <testcase classname="src/tests/auth.test.ts" name="auth &gt; enforceAuth &gt; does not send 401 when request is authorized" time="0.0011698">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health attribute.last_poll_at is null or a valid ISO timestamp" time="0.22584575">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/cache.test.ts" timestamp="2026-03-31T05:12:42.719Z" hostname="DESKTOP-TU0EB1V" tests="4" failures="0" errors="0" skipped="0" time="0.0852839">
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; addToBuffer stores one snapshot and updates latestSnapshot" time="0.062961">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Health &gt; GET /v1/health time_object.timestamp is a valid ISO timestamp" time="0.218733041">
         </testcase>
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; getBufferSince returns only entries from the requested time" time="0.0070539">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with no Authorization header" time="0.326211625">
         </testcase>
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; trims entries older than 24 hours" time="0.0032083">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; 401 response body has success: false" time="0.307831833">
         </testcase>
-        <testcase classname="src/tests/cache.test.ts" name="cache &gt; warmCache loads, sorts, filters nulls, and merges snapshots by timestamp" time="0.0107411">
-            <system-out>
-Warm cache loaded 1 entries for NEM.
-Warm cache loaded 2 entries for WEM.
-
-            </system-out>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; 401 response body has error: &apos;Unauthorized&apos;" time="0.308211708">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/index.test.ts" timestamp="2026-03-31T05:12:42.720Z" hostname="DESKTOP-TU0EB1V" tests="2" failures="0" errors="0" skipped="0" time="0.1347219">
-        <testcase classname="src/tests/index.test.ts" name="index file tests &gt; starts app and wires dependencies when env is valid" time="0.1009877">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with an incorrect token" time="0.217337167">
         </testcase>
-        <testcase classname="src/tests/index.test.ts" name="index file tests &gt; exits when required env is missing" time="0.0325606">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 when the Bearer prefix is missing" time="0.218786667">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/normalise.test.ts" timestamp="2026-03-31T05:12:42.721Z" hostname="DESKTOP-TU0EB1V" tests="8" failures="0" errors="0" skipped="0" time="0.0127274">
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; round, &gt; rounds numbers to requested decimals" time="0.0017071">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 when the auth scheme is not &apos;Bearer&apos;" time="0.216130416">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; round, &gt; returns null for null/undefined" time="0.0005256">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with a completely malformed Authorization header" time="0.216044166">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; builds network + region snapshots with correct aggregates" time="0.0030229">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; returns 401 with an empty Authorization header value" time="0.251450875">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; supports network region when the field is not there" time="0.0004111">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/stats enforces auth" time="0.315316458">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; uses datatable rows directly and falls back to DataTable parsing" time="0.0023306">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/history enforces auth" time="0.298255041">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; returns empty latest intervals and uses latest source rows in buildSnapshot" time="0.0006306">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/live/region/NSW1 enforces auth" time="0.216238416">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; handles unknown fueltech, zero generation, and missing market data" time="0.0005606">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Auth enforcement &gt; /v1/live/price enforces auth" time="0.296100667">
         </testcase>
-        <testcase classname="src/tests/normalise.test.ts" name="normalise &gt; buildSnapFromRows &gt; falls back to market or current time when generation timestamps are unavailable" time="0.0018771">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; returns 200 or 503" time="0.219811583">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/poller.test.ts" timestamp="2026-03-31T05:12:42.722Z" hostname="DESKTOP-TU0EB1V" tests="4" failures="0" errors="0" skipped="0" time="0.1484323">
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; poll success: fetches, builds, caches, writes S3, emits event, updates lastPollAt" time="0.1027023">
-            <system-out>
-Poll complete - NEM 100MW, 40% renewable. Duration: 0ms.
-
-            </system-out>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response is a valid ADAGE envelope" time="0.297407542">
         </testcase>
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; poll failure: logs error and skips cache/S3/update" time="0.0233785">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response dataset_type is &apos;live_snapshot_collection&apos;" time="0.218523334">
         </testcase>
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; startPoller uses configured POLL_INTERVAL_MS" time="0.0145888">
-            <system-err>
-Poll failed. TypeError: client.getNetworkData is not a function
-    at poll [90m(C:\Users\swaga\Documents\GitHub\ElectricityGrid-api\[39msrc\poller.ts:34:14[90m)[39m
-    at Module.startPoller [90m(C:\Users\swaga\Documents\GitHub\ElectricityGrid-api\[39msrc\poller.ts:110:8[90m)[39m
-    at [90mC:\Users\swaga\Documents\GitHub\ElectricityGrid-api\[39msrc\tests\poller.test.ts:161:30
-[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
-    at [90mfile:///C:/Users/swaga/Documents/GitHub/ElectricityGrid-api/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
-
-            </system-err>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 200 response event_type is &apos;snapshot_collection&apos;" time="0.288121167">
         </testcase>
-        <testcase classname="src/tests/poller.test.ts" name="poller &gt; startPoller uses default interval (5 minutes) when env is missing" time="0.0061286">
-            <system-err>
-Poll failed. TypeError: client.getNetworkData is not a function
-    at poll [90m(C:\Users\swaga\Documents\GitHub\ElectricityGrid-api\[39msrc\poller.ts:34:14[90m)[39m
-    at Module.startPoller [90m(C:\Users\swaga\Documents\GitHub\ElectricityGrid-api\[39msrc\poller.ts:110:8[90m)[39m
-    at [90mC:\Users\swaga\Documents\GitHub\ElectricityGrid-api\[39msrc\tests\poller.test.ts:178:16
-[90m    at processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
-    at [90mfile:///C:/Users/swaga/Documents/GitHub/ElectricityGrid-api/[39mnode_modules/[4m@vitest/runner[24m/dist/chunk-hooks.js:752:20
-
-            </system-err>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; 503 response body has success: false and an error message" time="0.3099595">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/rest.test.ts" timestamp="2026-03-31T05:12:42.723Z" hostname="DESKTOP-TU0EB1V" tests="9" failures="0" errors="0" skipped="0" time="0.1873661">
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/health works without auth and returns health payload" time="0.1394253">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM returns 200 or 503" time="0.303626125">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; auth hook runs for protected routes" time="0.0052475">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=WEM returns 200 or 503" time="0.305709291">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live returns 503 when cache is empty" time="0.0051328">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM 200 response dataset_type is &apos;live_snapshot&apos;" time="0.311794667">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live validates network query and returns 400/404/success" time="0.0062172">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=NEM 200 response event_type is &apos;network_snapshot&apos;" time="0.30344525">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live (no network) returns all snapshots" time="0.0038434">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID returns 400" time="0.308494708">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live/region/:region handles invalid/empty/missing/success" time="0.0069541">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID response body has success: false" time="0.303024292">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/live/price handles empty and success" time="0.0054585">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=INVALID response body has error: &apos;Invalid network&apos;" time="0.310355917">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/stats validates query and returns stats" time="0.0059026">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live (network-level snapshot) &gt; ?network=nem (lowercase) returns 400 — network codes are case-sensitive" time="0.305645666">
         </testcase>
-        <testcase classname="src/tests/rest.test.ts" name="rest routes &gt; GET /v1/history validates query and returns series" time="0.0074869">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 returns 200 or 503" time="0.305221375">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/s3-query.test.ts" timestamp="2026-03-31T05:12:42.725Z" hostname="DESKTOP-TU0EB1V" tests="20" failures="0" errors="0" skipped="0" time="0.1963988">
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns sorted + deduped points" time="0.0922481">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response has attribute.region === &apos;NSW1&apos;" time="0.308426959">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer handles region + price metric" time="0.0037558">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response has attribute.network set" time="0.303748">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer skips entries when network snapshot is missing" time="0.0027394">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.306709833">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns null for network price when no region price exists" time="0.0191189">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 returns 200 or 503" time="0.298080958">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer covers region fueltech, average price, and summary fallback metrics" time="0.0040784">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response has attribute.region === &apos;QLD1&apos;" time="0.215138292">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer returns null for unsupported fueltech metrics" time="0.0032506">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response has attribute.network set" time="0.214370708">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer handles snapshot fueltech price, curtailment lookups, and invalid metrics" time="0.0036165">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/QLD1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.213804208">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer covers remaining region metric branches" time="0.0035967">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 returns 200 or 503" time="0.284812167">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readFromBuffer falls back to region loads and curtailment for fueltech metrics" time="0.0063879">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response has attribute.region === &apos;VIC1&apos;" time="0.308511208">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to buffer for 24h/5m" time="0.0028666">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response has attribute.network set" time="0.217109334">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to hourly rollups for 7d" time="0.0022372">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/VIC1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.297527917">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; queryHistory routes to daily rollups for 30d/90d" time="0.0024178">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 returns 200 or 503" time="0.304939333">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters rows and maps metric" time="0.0024243">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response has attribute.region === &apos;SA1&apos;" time="0.303676875">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters by fueltech and maps generation fallback" time="0.0022676">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response has attribute.network set" time="0.215730208">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups filters out fueltech summary rows and maps demand/renewables/emissions metrics" time="0.0034494">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/SA1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.217943208">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readHourlyRollups returns null values for unsupported metrics" time="0.0031023">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 returns 200 or 503" time="0.26745075">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; readDailyRollups returns mapped daily points" time="0.0037407">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response has attribute.region === &apos;TAS1&apos;" time="0.220450333">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; computeStats returns min/max and ignores fueltech rows" time="0.0215479">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response has attribute.network set" time="0.309360333">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; computeStats returns null stats when no matching rows" time="0.0024726">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/TAS1 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.305305458">
         </testcase>
-        <testcase classname="src/tests/s3-query.test.ts" name="s3-query &gt; getBufferSize returns recentBuffer length" time="0.0093545">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM returns 200 or 503" time="0.217168625">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/s3.test.ts" timestamp="2026-03-31T05:12:42.727Z" hostname="DESKTOP-TU0EB1V" tests="15" failures="0" errors="0" skipped="0" time="0.0434809">
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds live keys" time="0.0037757">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response has attribute.region === &apos;WEM&apos;" time="0.216345042">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds raw and rollup keys" time="0.0019053">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response has attribute.network set" time="0.216648459">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds raw keys for a time range in 5-minute steps" time="0.0013232">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/WEM 200 response dataset_type is &apos;regional_live_snapshot&apos;" time="0.216946">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds hourly rollup keys for a range" time="0.0006473">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/INVALID returns 404" time="0.224254542">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 &gt; builds daily rollup keys counting back from today" time="0.0004496">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/INVALID response body error is &apos;Unknown region&apos;" time="0.2382535">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putJson writes json with cache-control" time="0.0045562">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/nsw1 returns 404" time="0.301743958">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putJson uses no-cache when maxAge is 0" time="0.0030422">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/nsw1 response body error is &apos;Unknown region&apos;" time="0.259822">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; putNdjson writes newline-delimited json" time="0.0033409">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW returns 404" time="0.215426833">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJson parses object body" time="0.003861">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/NSW response body error is &apos;Unknown region&apos;" time="0.217441125">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJson returns null for missing object" time="0.0027233">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/AU1 returns 404" time="0.229631875">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson returns [] for missing object" time="0.0033656">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/AU1 response body error is &apos;Unknown region&apos;" time="0.304977792">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson parses rows and ignores blank lines" time="0.002856">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/(empty string) returns 404" time="0.306851458">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getNdjson returns [] for missing object" time="0.0032224">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; /v1/live/region/(empty string) response body error is &apos;Unknown region&apos;" time="0.307202375">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; getJsonMany and getNdjsonMany aggregate results" time="0.0034631">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; 200 response includes attribute.updated_at as a valid ISO timestamp" time="0.213940458">
         </testcase>
-        <testcase classname="src/tests/s3.test.ts" name="s3 input output helpers &gt; throws when bucket is missing" time="0.0034761">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/region/:region &gt; 200 response is a valid ADAGE envelope" time="0.217400166">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/sse.test.ts" timestamp="2026-03-31T05:12:42.729Z" hostname="DESKTOP-TU0EB1V" tests="2" failures="0" errors="0" skipped="0" time="0.0171426">
-        <testcase classname="src/tests/sse.test.ts" name="sse routes &gt; registers /v1/events and rejects unauthorized requests" time="0.008478">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; returns 200 or 503" time="0.218654833">
         </testcase>
-        <testcase classname="src/tests/sse.test.ts" name="sse routes &gt; streams connected, update, and heartbeat events and cleans up on close" time="0.0067204">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response is a valid ADAGE envelope" time="0.217802791">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/system.test.ts" timestamp="2026-03-31T05:12:42.729Z" hostname="DESKTOP-TU0EB1V" tests="8" failures="0" errors="0" skipped="0" time="0.4980507">
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves health publicly and protects live endpoints with bearer auth" time="0.385614">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response dataset_type is &apos;live_price_snapshot&apos;" time="0.220731875">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; returns live snapshots and region pricing from the real route stack" time="0.0227376">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response event_type is &apos;regional_price_snapshot&apos;" time="0.243931208">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves 24h history from the in-memory buffer using the real query code" time="0.0192296">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response attribute is an array of price entries" time="0.306048917">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves historical rollups and computed stats through the real HTTP endpoints" time="0.0130571">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 200 response each price entry has network, region, price_dollar_per_mwh, demand_mw" time="0.307743792">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; rejects invalid history queries" time="0.0136504">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/live/price &gt; 503 response has success: false and error: &apos;Cache not yet warm&apos;" time="0.304790458">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; uses default history query params when only metric is provided" time="0.0142352">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h returns 400" time="0.307605333">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; serves region fueltech history from loads and curtailment fallback rows" time="0.0154682">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h response body has success: false" time="0.307604791">
         </testcase>
-        <testcase classname="src/tests/system.test.ts" name="system tests &gt; rejects unauthorized SSE connections before opening a stream" time="0.0128229">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=24h response body error is &apos;Invalid stats query&apos;" time="0.30346425">
         </testcase>
-    </testsuite>
-    <testsuite name="src/tests/ws.test.ts" timestamp="2026-03-31T05:12:42.731Z" hostname="DESKTOP-TU0EB1V" tests="10" failures="0" errors="0" skipped="0" time="0.0175625">
-        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; registers /v1/ws and blocks unauthorized in preValidation" time="0.00311">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=1h returns 400" time="0.213616875">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; sends initial snapshot and handles invalid message" time="0.0033291">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?range=1y returns 400" time="0.301791">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="ws route testing &gt; subscribes/unsubscribes and cleans up on close/error" time="0.0031141">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=INVALID&amp;range=7d returns 400" time="0.218399334">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; returns snapshots unchanged with empty subscriptions" time="0.0011711">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d returns 200 or 400" time="0.324051">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; filters by regions and recomputes aggregates" time="0.0004479">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response is a valid ADAGE envelope" time="0.304299084">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; filters snapshots down to price-only metric subscriptions" time="0.0014625">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response dataset_type is &apos;range_statistics&apos;" time="0.238371875">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; preserves emissions when only emissions metrics are subscribed" time="0.0005842">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=7d 200 response event_type is &apos;statistics_summary&apos;" time="0.272412834">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; retains generation, renewables, demand, and emission intensity metrics when subscribed" time="0.0009028">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d returns 200 or 400" time="0.44380675">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; handles zero-generation selected regions when recomputing proportions" time="0.0006697">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response is a valid ADAGE envelope" time="0.276462416">
         </testcase>
-        <testcase classname="src/tests/ws.test.ts" name="applySubscriptions &gt; merges duplicate load and curtailment fueltechs and preserves undefined regions" time="0.0006089">
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response dataset_type is &apos;range_statistics&apos;" time="0.303909458">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=30d 200 response event_type is &apos;statistics_summary&apos;" time="0.290284625">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d returns 200 or 400" time="0.4614585">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response is a valid ADAGE envelope" time="0.44478625">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response dataset_type is &apos;range_statistics&apos;" time="0.433472833">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; ?network=NEM&amp;range=90d 200 response event_type is &apos;statistics_summary&apos;" time="0.424816917">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/stats &gt; defaults to network=NEM and range=7d when no query params provided" time="0.573888041">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; no query params returns 400" time="0.213208875">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; no query params error is &apos;Invalid history query&apos;" time="0.213252041">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; missing metric returns 400" time="0.216233375">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; unknown metric returns 400" time="0.272644792">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid interval &apos;2h&apos; returns 400" time="0.2152155">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid interval &apos;30m&apos; returns 400" time="0.222859125">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; invalid network returns 400" time="0.222409708">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=generation_mw with valid params returns 200 or 400" time="0.658288917">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=generation_mw 200 response attribute.metric equals &apos;generation_mw&apos;" time="0.529153541">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=price with valid params returns 200 or 400" time="0.561510959">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=price 200 response attribute.metric equals &apos;price&apos;" time="0.512904833">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emissions_volume with valid params returns 200 or 400" time="0.462980791">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emissions_volume 200 response attribute.metric equals &apos;emissions_volume&apos;" time="0.611239834">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emission_intensity with valid params returns 200 or 400" time="0.613349625">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=emission_intensity 200 response attribute.metric equals &apos;emission_intensity&apos;" time="0.440799958">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=demand_mw with valid params returns 200 or 400" time="0.687696209">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=demand_mw 200 response attribute.metric equals &apos;demand_mw&apos;" time="0.481023833">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=renewables_pct with valid params returns 200 or 400" time="0.539616708">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; metric=renewables_pct 200 response attribute.metric equals &apos;renewables_pct&apos;" time="0.454867458">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=5m with valid params returns 200 or 400" time="3.488704">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=1h with valid params returns 200 or 400" time="0.500882791">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; interval=1d with valid params returns 200 or 400" time="0.512136625">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response is a valid ADAGE envelope" time="0.472931708">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response dataset_type is &apos;historical_series&apos;" time="0.490742542">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response event_type is &apos;history_series&apos;" time="0.529589792">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.series is an array" time="0.501330875">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.interval matches the requested interval" time="0.558591917">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — GET /v1/history &gt; 200 response attribute.range matches the requested range" time="0.444705834">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; GET /v1/health includes access-control-allow-origin" time="0.231978792">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; GET /v1/live includes access-control-allow-origin" time="0.308245">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — CORS headers &gt; preflight OPTIONS /v1/live returns 200 or 204" time="0.216113917">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; GET /v1/health response Content-Type is application/json" time="0.215357084">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; GET /v1/live response Content-Type is application/json" time="0.22062175">
+        </testcase>
+        <testcase classname="src/tests/e2e/api.e2e.test.ts" name="E2E — Content-Type header &gt; error responses also return application/json" time="0.214674334">
         </testcase>
     </testsuite>
 </testsuites>

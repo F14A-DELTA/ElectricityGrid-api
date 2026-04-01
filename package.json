@@ -10,9 +10,10 @@
     "backfill:raw": "node -r dotenv/config dist/scripts/backfill-raw.js",
     "backfill:rollups": "node -r dotenv/config dist/scripts/build-rollups-local.js",
     "backfill:upload": "node -r dotenv/config dist/scripts/upload-backfill.js",
-    "test": "vitest run",
+    "test": "vitest run --exclude src/tests/e2e",
     "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage --exclude src/tests/e2e",
+    "test:e2e": "vitest run src/tests/e2e",
     "lint": "eslint . -f json -o lint-report.json",
     "generate:report": "node scripts/generate-report.js",
     "swagger:generate": "npx tsc && node dist/src/generate-swagger.js"

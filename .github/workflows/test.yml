@@ -73,23 +73,26 @@ jobs:
 
       - run: npm ci
 
+      # ✅ Run tests + coverage + lint
       - run: npm test
       - run: npm run test:coverage
       - run: npm run lint
 
+      # ✅ Upload to Codecov
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
+      # ✅ Generate PDF report
       - run: npm run generate:report
         continue-on-error: true
+
+      # ✅ Rename PDF dynamically
       - run: mv report.pdf report-${{ github.run_id }}.pdf
 
-
-      - run: mv report.pdf report-${{ github.run_id }}.pdf
-
+      # ✅ Upload PDF artifact
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -116,21 +119,26 @@ jobs:
 
       - run: npm ci
 
+      # ✅ Run tests + coverage + lint
       - run: npm test
       - run: npm run test:coverage
       - run: npm run lint
 
+      # ✅ Upload to Codecov
       - uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage/lcov.info
           fail_ci_if_error: true
 
+      # ✅ Generate PDF report
       - run: npm run generate:report
         continue-on-error: true
 
+      # ✅ Rename PDF dynamically
       - run: mv report.pdf report-${{ github.run_id }}.pdf
 
+      # ✅ Upload PDF artifact
       - uses: actions/upload-artifact@v4
         if: always()
         with:
